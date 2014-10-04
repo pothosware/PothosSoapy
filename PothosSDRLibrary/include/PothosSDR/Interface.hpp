@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <complex>
 
 namespace PothosSDR
 {
@@ -29,6 +30,13 @@ typedef std::vector<std::pair<double, double> > RangeList;
 class POTHOS_SDR_API SDRDevice
 {
 public:
+
+    /*!
+     * Make a new SDRDevice object given device construction args.
+     * \param args device construction key/value arguments
+     * \return a pointer to a new SDRDevice object
+     */
+    static SDRDevice *make(const Kwargs &args);
 
     /*******************************************************************
      * Channels API
