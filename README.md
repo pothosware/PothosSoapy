@@ -1,13 +1,15 @@
-# SDR interface wrapper and Pothos blocks
+# Pothos SDR blocks
+
+SDR source and sink blocks for interfacing SDR hardware with Pothos.
+
+##Dependencies
+
+* Pothos library
+* SoapySDR library
 
 ##Documentation
 
 * https://github.com/pothosware/pothos-sdr/wiki
-
-## Directory structure
-
-* PothosSDRLibrary/ - interface library for SDR devices
-* PothosSDRBlocks/ - streaming source and sink blocks
 
 ## Licensing information
 
