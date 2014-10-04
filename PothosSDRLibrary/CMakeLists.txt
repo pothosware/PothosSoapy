@@ -19,6 +19,8 @@ install(
 ########################################################################
 set(POTHOS_SDR_SOURCES
     lib/Interface.cpp
+    lib/Factory.cpp
+    lib/Registry.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

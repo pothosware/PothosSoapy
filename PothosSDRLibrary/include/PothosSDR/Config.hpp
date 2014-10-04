@@ -47,3 +47,7 @@
   #define POTHOS_SDR_LOCAL
   #define POTHOS_SDR_EXTERN
 #endif // POTHOS_SDR_DLL
+
+#include <ciso646>
+
+#define POTHOS_SDR_BOOST

@@ -14,6 +14,11 @@
 #include <map>
 #include <string>
 #include <complex>
+#ifdef POTHOS_SDR_BOOST
+#include <boost/shared_ptr.hpp>
+#else
+#include <memory> //shared ptr
+#endif
 
 namespace PothosSDR
 {
@@ -31,12 +36,18 @@ class POTHOS_SDR_API SDRDevice
 {
 public:
 
+    #ifdef POTHOS_SDR_BOOST
+    typedef boost::shared_ptr<SDRDevice> Sptr;
+    #else
+    typedef std::shared_ptr<SDRDevice> Sptr;
+    #endif
+
     /*!
      * Make a new SDRDevice object given device construction args.
-     * \param args device construction key/value arguments
+     * \param args device construction key/value argument markup
      * \return a pointer to a new SDRDevice object
      */
-    static SDRDevice *make(const Kwargs &args);
+    static Sptr make(const std::string &args);
 
     /*******************************************************************
      * Channels API
