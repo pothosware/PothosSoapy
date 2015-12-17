@@ -1,8 +1,9 @@
 This this the changelog file for the Pothos SDR toolkit.
 
-Release 0.3.0 (pending)
+Release 0.3.0 (2015-12-16)
 ==========================
 
+- Added debian packaging support for sdr toolkit
 - Added report stream status forwarding to signal
 - Added support for GPIO bank config and readback
 - Added support for per-channel sensors querying
