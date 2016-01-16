@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
@@ -837,7 +837,11 @@ void SDRBlock::activate(void)
         {
             ret = _device->activateStream(_stream);
         }
+        #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
+        if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "activateStream returned " + std::string(SoapySDR::errToStr(ret)));
+        #else
         if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "activateStream returned " + std::to_string(ret));
+        #endif
     }
 
     this->emitActivationSignals();
@@ -852,5 +856,9 @@ void SDRBlock::deactivate(void)
     this->configureStatusThread();
 
     const int ret = _device->deactivateStream(_stream);
+    #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
+    if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "deactivateStream returned " + std::string(SoapySDR::errToStr(ret)));
+    #else
     if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "deactivateStream returned " + std::to_string(ret));
+    #endif
 }
