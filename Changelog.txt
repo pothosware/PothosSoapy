@@ -3,6 +3,7 @@ This this the changelog file for the Pothos SDR toolkit.
 Release 0.3.1 (pending)
 ==========================
 
+- Use SoapySDR::errToStr() on readStream/writeStream
 - Use SoapySDR::errToStr() on activate/deactivate
 - Added missing libpoco-dev to debian Build-Depends
 

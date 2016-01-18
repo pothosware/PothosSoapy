@@ -1,7 +1,11 @@
-// Copyright (c) 2014-2014 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
+#include <SoapySDR/Version.hpp>
+#ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
+#include <SoapySDR/Errors.hpp>
+#endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 
 class SDRSource : public SDRBlock
 {
@@ -58,7 +62,11 @@ public:
             if (ret == SOAPY_SDR_OVERFLOW) _postTime = true;
             if (ret == SOAPY_SDR_OVERFLOW) return this->yield();
             //otherwise throw an exception with the error code
+            #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
+            throw Pothos::Exception("SDRSource::work()", "readStream "+std::string(SoapySDR::errToStr(ret)));
+            #else
             throw Pothos::Exception("SDRSource::work()", "readStream "+std::to_string(ret));
+            #endif
         }
 
         //produce output and post pending labels
