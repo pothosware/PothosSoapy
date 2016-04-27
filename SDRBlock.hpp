@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -208,6 +208,28 @@ public:
     void setGpioConfig(const Pothos::ObjectVector &config);
 
     unsigned getGpioValue(const std::string &bank) const;
+
+    /*******************************************************************
+     * Settings
+     ******************************************************************/
+
+    void setGlobalSettings(const Pothos::ObjectKwargs &config);
+
+    void setChannelSettings(const Pothos::ObjectKwargs &config);
+
+    //vector of kwargs version for each channel
+    void setChannelSettings(const Pothos::ObjectVector &config);
+
+    //--- versions below for single settings ---//
+
+    //write specific key for a global setting
+    void setGlobalSetting(const std::string &key, const Pothos::Object &value);
+
+    //write specific key to all channels with this block
+    void setChannelSetting(const std::string &key, const Pothos::Object &value);
+
+    //write specific key to specific channel
+    void setChannelSetting(const size_t chan, const std::string &key, const Pothos::Object &value);
 
     /*******************************************************************
      * Streaming implementation
