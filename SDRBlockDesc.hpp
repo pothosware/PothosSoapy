@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 /***********************************************************************
@@ -243,7 +243,19 @@
  * {"bank":"EXTERNAL", "dir":0x1f, "mask":0x1f, "value":0x05}
  * |default {}
  * |preview valid
- * |tab GPIO
+ * |tab Advanced
+ *
+ * |param globalSettings[Global settings] Global channel settings with key-value pairs.
+ * Each key-value string value will be passed to the global writeSetting() API call.
+ * |default {}
+ * |preview valid
+ * |tab Advanced
+ *
+ * |param channelSettings[Channel settings] Arbitrary channel settings with key-value pairs.
+ * Each key-value string value will be passed to the writeSetting() API call for this channel.
+ * |default {}
+ * |preview valid
+ * |tab Advanced
  *
  * |factory @PATH@(dtype, channels)
  * |initializer setupDevice(deviceArgs)
@@ -262,4 +274,6 @@
  * |setter setTimeSource(timeSource)
  * |setter setGpioConfig(gpioConfig)
  * |setter setEnableStatus(enableStatus)
+ * |setter setGlobalSettings(globalSettings)
+ * |setter setChannelSettings(channelSettings)
  **********************************************************************/

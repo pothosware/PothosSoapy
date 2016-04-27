@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -210,6 +210,28 @@ public:
     unsigned getGpioValue(const std::string &bank) const;
 
     /*******************************************************************
+     * Settings
+     ******************************************************************/
+
+    void setGlobalSettings(const Pothos::ObjectKwargs &config);
+
+    void setChannelSettings(const Pothos::ObjectKwargs &config);
+
+    //vector of kwargs version for each channel
+    void setChannelSettings(const Pothos::ObjectVector &config);
+
+    //--- versions below for single settings ---//
+
+    //write specific key for a global setting
+    void setGlobalSetting(const std::string &key, const Pothos::Object &value);
+
+    //write specific key to all channels with this block
+    void setChannelSetting(const std::string &key, const Pothos::Object &value);
+
+    //write specific key to specific channel
+    void setChannelSetting(const size_t chan, const std::string &key, const Pothos::Object &value);
+
+    /*******************************************************************
      * Streaming implementation
      ******************************************************************/
     virtual void activate(void);
@@ -217,14 +239,18 @@ public:
     virtual void work(void) = 0;
 
 private:
+    std::string _toString(const Pothos::Object &val)
+    {
+        if (val.type() == typeid(std::string)) return val.extract<std::string>();
+        return val.toString();
+    }
+
     SoapySDR::Kwargs _toKwargs(const Pothos::ObjectKwargs &args)
     {
         SoapySDR::Kwargs kwargs;
         for (const auto &pair : args)
         {
-            const auto val = pair.second;
-            const auto valStr = (val.type() == typeid(std::string))?val.extract<std::string>():val.toString();
-            kwargs[pair.first] = valStr;
+            kwargs[pair.first] = _toString(pair.second);
         }
         return kwargs;
     }
