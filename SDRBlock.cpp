@@ -802,32 +802,50 @@ unsigned SDRBlock::getGpioValue(const std::string &bank) const
 
 void SDRBlock::setGlobalSettings(const Pothos::ObjectKwargs &config)
 {
-    
+    for (const auto &pair : config)
+    {
+        this->setGlobalSetting(pair.first, pair.second);
+    }
 }
 
 void SDRBlock::setChannelSettings(const Pothos::ObjectKwargs &config)
 {
-    
+    for (const auto &pair : config)
+    {
+        for (size_t i = 0; i < _channels.size(); i++)
+        {
+            this->setChannelSetting(i, pair.first, pair.second);
+        }
+    }
 }
 
 void SDRBlock::setChannelSettings(const Pothos::ObjectVector &config)
 {
-    
+    for (size_t i = 0; i < config.size(); i++)
+    {
+        const auto &config_i = config.at(i).convert<Pothos::ObjectKwargs>();
+        for (const auto &pair : config_i)
+        {
+            this->setChannelSetting(i, pair.first, pair.second);
+        }
+    }
 }
 
 void SDRBlock::setGlobalSetting(const std::string &key, const Pothos::Object &value)
 {
-    
+    _device->writeSetting(key, _toString(value));
 }
 
 void SDRBlock::setChannelSetting(const std::string &key, const Pothos::Object &value)
 {
-    
+    for (size_t i = 0; i < _channels.size(); i++) this->setChannelSetting(i, key, value);
 }
 
 void SDRBlock::setChannelSetting(const size_t chan, const std::string &key, const Pothos::Object &value)
 {
-    
+    #ifdef SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
+    _device->writeSetting(_direction, _channels.at(chan), key, _toString(value));
+    #endif //SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
 }
 
 /*******************************************************************

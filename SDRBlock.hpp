@@ -239,14 +239,18 @@ public:
     virtual void work(void) = 0;
 
 private:
+    std::string _toString(const Pothos::Object &val)
+    {
+        if (val.type() == typeid(std::string)) return val.extract<std::string>();
+        return val.toString();
+    }
+
     SoapySDR::Kwargs _toKwargs(const Pothos::ObjectKwargs &args)
     {
         SoapySDR::Kwargs kwargs;
         for (const auto &pair : args)
         {
-            const auto val = pair.second;
-            const auto valStr = (val.type() == typeid(std::string))?val.extract<std::string>():val.toString();
-            kwargs[pair.first] = valStr;
+            kwargs[pair.first] = _toString(pair.second);
         }
         return kwargs;
     }
