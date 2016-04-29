@@ -6,6 +6,9 @@
 #include <SoapySDR/Device.hpp>
 #include <future>
 #include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 class SDRBlock : public Pothos::Block
 {
@@ -269,7 +272,16 @@ protected:
     bool _enableStatus;
     std::thread _statusMonitor;
 
+    //evaluation thread
+    std::mutex _callMutex;
+    std::mutex _argsMutex;
+    std::condition_variable _cond;
     std::vector<std::pair<std::string, Pothos::ObjectVector>> _cachedArgs;
+    std::thread _evalThread;
+    void evalThreadLoop(void);
+    std::exception_ptr _evalError;
+    std::atomic<bool> _evalThreadDone;
+    std::atomic<bool> _evalErrorValid;
     std::shared_future<SoapySDR::Device *> _deviceFuture;
 
     std::vector<Pothos::ObjectKwargs> _pendingLabels;

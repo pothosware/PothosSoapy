@@ -64,6 +64,7 @@ POTHOS_MODULE_UTIL(
         DemoController.cpp
         Logger.cpp
         SDRInfo.cpp
+        SDRBlockThread.cpp
     LIBRARIES ${SoapySDR_LIBRARIES}
     DESTINATION sdr
     DOC_SOURCES
