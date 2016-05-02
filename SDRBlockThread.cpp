@@ -6,12 +6,51 @@
 #include <Poco/Logger.h>
 #include <Poco/SingletonHolder.h>
 #include <cassert>
+#include <iostream>
 
 /*******************************************************************
  * Delayed method dispatch
  ******************************************************************/
 Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)
 {
+    std::unique_lock<std::mutex> argsLock(_argsMutex);
+
+    //check for existing errors, throw and clear
+    if (_evalErrorValid)
+    {
+        std::rethrow_exception(_evalError);
+        _evalErrorValid = false;
+    }
+
+    //put setters into the args cache
+    const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
+    if (isSetter)
+    {
+        bool addedToCache = false;
+        for (auto &entry : _cachedArgs)
+        {
+            if (entry.first != name) continue;
+            entry.second = Pothos::ObjectVector(inputArgs, inputArgs+numArgs);
+            addedToCache = true;
+            break;
+        }
+        if (not addedToCache) _cachedArgs.push_back(
+            std::make_pair(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs)));
+        _cond.notify_one();
+        return Pothos::Object();
+    }
+
+    //block on cache to be emptied
+    while (true)
+    {
+        if (not _cachedArgs.empty()) _cond.wait(argsLock);
+        if (not _cachedArgs.empty()) continue;
+        std::lock_guard<std::mutex> callLock(_callMutex);
+        return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
+    }
+
+    //blocking call to the getter
+    /*
     //try to setup the device future first
     if (name == "setupDevice") return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
 
@@ -23,10 +62,30 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
     if (isSetter) _cachedArgs.push_back(std::make_pair(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs)));
     else throw Pothos::Exception("SDRBlock::"+name+"()", "device not ready");
     return Pothos::Object();
+    */
 }
 
 bool SDRBlock::isReady(void)
 {
+    std::unique_lock<std::mutex> argsLock(_argsMutex);
+
+    //check for existing errors, throw and clear
+    if (_evalErrorValid)
+    {
+        std::rethrow_exception(_evalError);
+        _evalErrorValid = false;
+    }
+
+    //TODO remove this...
+    while (true)
+    {
+        if (not _cachedArgs.empty()) _cond.wait(argsLock);
+        if (not _cachedArgs.empty()) continue;
+    }
+
+    return _cachedArgs.empty();
+
+    /*
     if (_device != nullptr) return true;
     if (_deviceFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return false;
     _device = _deviceFuture.get();
@@ -46,6 +105,7 @@ bool SDRBlock::isReady(void)
     }
 
     return true;
+    */
 }
 
 /*******************************************************************
@@ -78,5 +138,6 @@ void SDRBlock::evalThreadLoop(void)
             _evalError = std::current_exception();
             _evalErrorValid = true;
         }
+        _cond.notify_one();
     }
 }

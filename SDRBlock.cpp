@@ -165,6 +165,11 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
 
     //status
     this->registerSignal("status");
+
+    //start eval thread
+    _evalThreadDone = false;
+    _evalError = false;
+    _evalThread = std::thread(&SDRBlock::evalThreadLoop, this);
 }
 
 static std::mutex &getMutex(void)
@@ -188,6 +193,11 @@ SDRBlock::~SDRBlock(void)
     //close the stream, the stream should be stopped by deactivate
     //but this actually cleans up and frees the stream object
     if (_stream != nullptr) _device->closeStream(_stream);
+
+    //stop the eval thread before cleaning up
+    _evalThreadDone = true;
+    _cond.notify_one();
+    _evalThread.join();
 
     //if for some reason we didn't complete the future
     //we have to wait on it here and catch all errors
