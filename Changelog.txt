@@ -1,6 +1,6 @@
 This this the changelog file for the Pothos SDR toolkit.
 
-Release 0.3.1 (pending)
+Release 0.3.1 (2016-05-10)
 ==========================
 
 - Added arbitrary global and channel settings hooks
