@@ -264,7 +264,7 @@
  * |option [Synchronous calls] "SYNCHRONOUS"
  * |option [Activate waits] "ACTIVATE_WAITS"
  * |option [Activate throws] "ACTIVATE_THROWS"
- * |default "SYNCHRONOUS"
+ * |default "ACTIVATE_WAITS"
  * |preview disable
  * |tab Advanced
  *

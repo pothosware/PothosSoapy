@@ -52,9 +52,10 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
     }
 
     //put setters into the args cache when blocking is disabled
+    //or when squashing is enabled during block activation
     const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
-    const bool background = isSetter and not _settersBlock;
-    if (background)
+    const bool background = not _settersBlock or (_eventSquash and this->isActive());
+    if (isSetter and background)
     {
         _cachedArgs.emplace_back(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs));
         argsLock.unlock();
@@ -108,12 +109,15 @@ void SDRBlock::evalThreadLoop(void)
 
         //skip if there is a more recent setting
         bool skip = false;
-        if (_eventSquash) for (const auto &args : _cachedArgs)
+        if (_eventSquash and this->isActive())
         {
-            if (current.first == args.first)
+            for (const auto &args : _cachedArgs)
             {
-                skip = true;
-                break;
+                if (current.first == args.first)
+                {
+                    skip = true;
+                    break;
+                }
             }
         }
 
