@@ -283,7 +283,6 @@ protected:
     std::thread _statusMonitor;
 
     //evaluation thread
-    std::mutex _callMutex;
     std::mutex _argsMutex;
     std::condition_variable _cond;
     std::vector<std::pair<std::string, Pothos::ObjectVector>> _cachedArgs;

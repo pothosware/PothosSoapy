@@ -51,47 +51,22 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
         _evalErrorValid = false;
     }
 
-    //put setters into the args cache
+    //put setters into the args cache when blocking is disabled
     const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
-    if (isSetter)
+    const bool background = isSetter and not _settersBlock;
+    if (background)
     {
-        bool addedToCache = false;
-        for (auto &entry : _cachedArgs)
-        {
-            if (entry.first != name) continue;
-            entry.second = Pothos::ObjectVector(inputArgs, inputArgs+numArgs);
-            addedToCache = true;
-            break;
-        }
-        if (not addedToCache) _cachedArgs.push_back(
-            std::make_pair(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs)));
+        _cachedArgs.emplace_back(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs));
+        argsLock.unlock();
         _cond.notify_one();
         return Pothos::Object();
     }
 
-    //block on cache to be emptied
-    while (true)
-    {
-        if (not _cachedArgs.empty()) _cond.wait(argsLock);
-        if (not _cachedArgs.empty()) continue;
-        std::lock_guard<std::mutex> callLock(_callMutex);
-        return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
-    }
+    //block on cached args to become empty
+    while (not _cachedArgs.empty()) _cond.wait(argsLock);
 
-    //blocking call to the getter
-    /*
-    //try to setup the device future first
-    if (name == "setupDevice") return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
-
-    //when ready forward the call to the handler
-    if (this->isReady()) return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
-
-    //cache attempted settings when not ready
-    const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
-    if (isSetter) _cachedArgs.push_back(std::make_pair(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs)));
-    else throw Pothos::Exception("SDRBlock::"+name+"()", "device not ready");
-    return Pothos::Object();
-    */
+    //make the blocking call in this context
+    return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
 }
 
 bool SDRBlock::isReady(void)
@@ -105,36 +80,14 @@ bool SDRBlock::isReady(void)
         _evalErrorValid = false;
     }
 
-    //TODO remove this...
-    while (true)
-    {
-        if (not _cachedArgs.empty()) _cond.wait(argsLock);
-        if (not _cachedArgs.empty()) continue;
-    }
+    //when not blocking, we are ready when all cached args are processed
+    if (not _activateBlocks) return _cachedArgs.empty();
 
-    return _cachedArgs.empty();
+    //block on cached args to become empty
+    while (not _cachedArgs.empty()) _cond.wait(argsLock);
 
-    /*
-    if (_device != nullptr) return true;
-    if (_deviceFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return false;
-    _device = _deviceFuture.get();
-    assert(_device != nullptr);
-
-    //call the cached settings now that the device exists
-    for (const auto &pair : _cachedArgs)
-    {
-        POTHOS_EXCEPTION_TRY
-        {
-            Pothos::Block::opaqueCallHandler(pair.first, pair.second.data(), pair.second.size());
-        }
-        POTHOS_EXCEPTION_CATCH (const Pothos::Exception &ex)
-        {
-            poco_error_f2(Poco::Logger::get("SDRBlock"), "call %s threw: %s", pair.first, ex.displayText());
-        }
-    }
-
+    //all cached args processed, we are ready
     return true;
-    */
 }
 
 /*******************************************************************
@@ -153,10 +106,14 @@ void SDRBlock::evalThreadLoop(void)
         std::pair<std::string, Pothos::ObjectVector> current;
         current = _cachedArgs.front();
         _cachedArgs.erase(_cachedArgs.begin());
-        argsLock.unlock();
+
+        //skip if there is a more recent setting
+        if (_eventSquash) for (const auto &args : _cachedArgs)
+        {
+            if (current.first == args.first) goto skipCall;
+        }
 
         //make the call in this thread
-        std::lock_guard<std::mutex> callLock(_callMutex);
         POTHOS_EXCEPTION_TRY
         {
             Pothos::Block::opaqueCallHandler(current.first, current.second.data(), current.second.size());
@@ -167,6 +124,7 @@ void SDRBlock::evalThreadLoop(void)
             _evalError = std::current_exception();
             _evalErrorValid = true;
         }
-        _cond.notify_one();
+
+        skipCall: continue;
     }
 }
