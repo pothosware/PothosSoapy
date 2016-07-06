@@ -13,20 +13,20 @@
  ******************************************************************/
 void SDRBlock::setBackgroundMode(const std::string &mode)
 {
-    if (mode == "SETTERS_BLOCK")
+    if (mode == "SYNCHRONOUS")
     {
         _settersBlock = true;
-        _activateBlocks = true;
+        _activateWaits = true;
     }
-    else if (mode == "ACTIVATE_BLOCKS")
+    else if (mode == "ACTIVATE_WAITS")
     {
         _settersBlock = false;
-        _activateBlocks = true;
+        _activateWaits = true;
     }
     else if (mode == "ACTIVATE_THROWS")
     {
         _settersBlock = false;
-        _activateBlocks = false;
+        _activateWaits = false;
     }
     else throw Pothos::InvalidArgumentException(
         "SDRBlock::setBackgroundMode("+mode+")", "unknown background mode");
@@ -81,7 +81,7 @@ bool SDRBlock::isReady(void)
     }
 
     //when not blocking, we are ready when all cached args are processed
-    if (not _activateBlocks) return _cachedArgs.empty();
+    if (not _activateWaits) return _cachedArgs.empty();
 
     //block on cached args to become empty
     while (not _cachedArgs.empty()) _cond.wait(argsLock);
@@ -103,15 +103,25 @@ void SDRBlock::evalThreadLoop(void)
         if (_cachedArgs.empty()) continue;
 
         //pop the most recent setting args
-        std::pair<std::string, Pothos::ObjectVector> current;
-        current = _cachedArgs.front();
+        auto current = _cachedArgs.front();
         _cachedArgs.erase(_cachedArgs.begin());
 
         //skip if there is a more recent setting
+        bool skip = false;
         if (_eventSquash) for (const auto &args : _cachedArgs)
         {
-            if (current.first == args.first) goto skipCall;
+            if (current.first == args.first)
+            {
+                skip = true;
+                break;
+            }
         }
+
+        //done with cache, unlock to unblock main thread
+        //and notify any blockers that may have been waiting
+        argsLock.unlock();
+        _cond.notify_one();
+        if (skip) continue;
 
         //make the call in this thread
         POTHOS_EXCEPTION_TRY
@@ -124,7 +134,5 @@ void SDRBlock::evalThreadLoop(void)
             _evalError = std::current_exception();
             _evalErrorValid = true;
         }
-
-        skipCall: continue;
     }
 }

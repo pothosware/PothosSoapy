@@ -14,7 +14,7 @@
 
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
     _settersBlock(true),
-    _activateBlocks(true),
+    _activateWaits(true),
     _eventSquash(false),
     _autoActivate(true),
     _direction(direction),

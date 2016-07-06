@@ -260,11 +260,11 @@
  * |param backgroundMode[Background mode] Optional background threading for initialization.
  * When enabled, setter calls will not block, they will be evaluated in a background thread.
  * A secondary part of this option controls how the activate() call will handle the case
- * when settings have not yet completed. The options for activate are to block or error out.
- * |option [Setters block] "SETTERS_BLOCK"
- * |option [Activate blocks] "ACTIVATE_BLOCKS"
+ * when settings have not yet completed. The options for activate are to wait or to throw.
+ * |option [Synchronous calls] "SYNCHRONOUS"
+ * |option [Activate waits] "ACTIVATE_WAITS"
  * |option [Activate throws] "ACTIVATE_THROWS"
- * |default "SETTERS_BLOCK"
+ * |default "SYNCHRONOUS"
  * |preview disable
  * |tab Advanced
  *

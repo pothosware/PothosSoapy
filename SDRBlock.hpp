@@ -270,7 +270,7 @@ protected:
     void emitActivationSignals(void);
 
     bool _settersBlock;
-    bool _activateBlocks;
+    bool _activateWaits;
     bool _eventSquash;
     bool _autoActivate;
     const int _direction;
