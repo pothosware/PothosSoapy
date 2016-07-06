@@ -257,7 +257,30 @@
  * |preview valid
  * |tab Advanced
  *
+ * |param backgroundMode[Background mode] Optional background threading for initialization.
+ * When enabled, setter calls will not block, they will be evaluated in a background thread.
+ * A secondary part of this option controls how the activate() call will handle the case
+ * when settings have not yet completed. The options for activate are to block or error out.
+ * |option [Setters block] "SETTERS_BLOCK"
+ * |option [Activate blocks] "ACTIVATE_BLOCKS"
+ * |option [Activate throws] "ACTIVATE_THROWS"
+ * |default "SETTERS_BLOCK"
+ * |preview disable
+ * |tab Advanced
+ *
+ * |param eventSquash[Event squashing] Optional squashing of setter calls.
+ * When the block is activated its possible for an upstream block to produce more
+ * setting events than the block can keep up with (example a slider setting the gain).
+ * Only the most recent value is actually desirable to keep and apply to the device.
+ * This option allows intermediate settings to be discarded.
+ * |option [Enable] true
+ * |option [Disable] false
+ * |default false
+ * |preview disable
+ * |tab Advanced
+ *
  * |factory @PATH@(dtype, channels)
+ * |initializer setBackgroundMode(backgroundMode)
  * |initializer setupDevice(deviceArgs)
  * |initializer setupStream(streamArgs)
  * |initializer setFrontendMap(frontendMap)
@@ -276,4 +299,5 @@
  * |setter setEnableStatus(enableStatus)
  * |setter setGlobalSettings(globalSettings)
  * |setter setChannelSettings(channelSettings)
+ * |setter enableEventSquash(eventSquash)
  **********************************************************************/

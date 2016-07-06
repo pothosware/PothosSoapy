@@ -13,6 +13,9 @@
 #include <cassert>
 
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
+    _settersBlock(true),
+    _activateBlocks(true),
+    _eventSquash(false),
     _autoActivate(true),
     _direction(direction),
     _dtype(dtype),
@@ -26,6 +29,10 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     if (SoapySDR::getABIVersion() != SOAPY_SDR_ABI_VERSION) throw Pothos::Exception("SDRBlock::make()",
         Poco::format("Failed ABI check. Pothos SDR %s. Soapy SDR %s. Rebuild the module.",
         std::string(SOAPY_SDR_ABI_VERSION), SoapySDR::getABIVersion()));
+
+    //threading options
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setBackgroundMode));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, enableEventSquash));
 
     //streaming
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setupDevice));

@@ -9,6 +9,35 @@
 #include <iostream>
 
 /*******************************************************************
+ * threading configuration
+ ******************************************************************/
+void SDRBlock::setBackgroundMode(const std::string &mode)
+{
+    if (mode == "SETTERS_BLOCK")
+    {
+        _settersBlock = true;
+        _activateBlocks = true;
+    }
+    else if (mode == "ACTIVATE_BLOCKS")
+    {
+        _settersBlock = false;
+        _activateBlocks = true;
+    }
+    else if (mode == "ACTIVATE_THROWS")
+    {
+        _settersBlock = false;
+        _activateBlocks = false;
+    }
+    else throw Pothos::InvalidArgumentException(
+        "SDRBlock::setBackgroundMode("+mode+")", "unknown background mode");
+}
+
+void SDRBlock::enableEventSquash(const bool enable)
+{
+    _eventSquash = enable;
+}
+
+/*******************************************************************
  * Delayed method dispatch
  ******************************************************************/
 Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)

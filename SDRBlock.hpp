@@ -24,6 +24,13 @@ public:
     /*******************************************************************
      * Delayed method dispatch
      ******************************************************************/
+
+    //! Evaluate setters in a background thread as to not block
+    void setBackgroundMode(const std::string &mode);
+
+    //! Once activated, allow settings to queue and discard old ones
+    void enableEventSquash(const bool enable);
+
     Pothos::Object opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs);
 
     /*******************************************************************
@@ -262,6 +269,9 @@ protected:
     bool isReady(void);
     void emitActivationSignals(void);
 
+    bool _settersBlock;
+    bool _activateBlocks;
+    bool _eventSquash;
     bool _autoActivate;
     const int _direction;
     const Pothos::DType _dtype;
