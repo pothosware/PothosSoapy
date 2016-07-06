@@ -47,8 +47,8 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
     //check for existing errors, throw and clear
     if (_evalErrorValid)
     {
-        std::rethrow_exception(_evalError);
         _evalErrorValid = false;
+        std::rethrow_exception(_evalError);
     }
 
     //put setters into the args cache when blocking is disabled
@@ -76,8 +76,8 @@ bool SDRBlock::isReady(void)
     //check for existing errors, throw and clear
     if (_evalErrorValid)
     {
-        std::rethrow_exception(_evalError);
         _evalErrorValid = false;
+        std::rethrow_exception(_evalError);
     }
 
     //when not blocking, we are ready when all cached args are processed
@@ -131,6 +131,7 @@ void SDRBlock::evalThreadLoop(void)
         POTHOS_EXCEPTION_CATCH (const Pothos::Exception &ex)
         {
             poco_error_f2(Poco::Logger::get("SDRBlock"), "call %s threw: %s", current.first, ex.displayText());
+            argsLock.lock(); //re-lock to set exception
             _evalError = std::current_exception();
             _evalErrorValid = true;
         }

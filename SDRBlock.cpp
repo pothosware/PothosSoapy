@@ -175,7 +175,7 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
 
     //start eval thread
     _evalThreadDone = false;
-    _evalError = false;
+    _evalErrorValid = false;
     _evalThread = std::thread(&SDRBlock::evalThreadLoop, this);
 }
 
