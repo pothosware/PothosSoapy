@@ -257,7 +257,7 @@
  * |preview valid
  * |tab Advanced
  *
- * |param backgroundMode[Background mode] Optional background threading for initialization.
+ * |param callingMode[Calling mode] Optional background threading for initialization.
  * When enabled, setter calls will not block, they will be evaluated in a background thread.
  * A secondary part of this option controls how the activate() call will handle the case
  * when settings have not yet completed. The options for activate are to wait or to throw.
@@ -280,7 +280,8 @@
  * |tab Advanced
  *
  * |factory @PATH@(dtype, channels)
- * |initializer setBackgroundMode(backgroundMode)
+ * |setter setCallingMode(callingMode)
+ * |setter setEventSquash(eventSquash)
  * |initializer setupDevice(deviceArgs)
  * |initializer setupStream(streamArgs)
  * |initializer setFrontendMap(frontendMap)
@@ -299,5 +300,4 @@
  * |setter setEnableStatus(enableStatus)
  * |setter setGlobalSettings(globalSettings)
  * |setter setChannelSettings(channelSettings)
- * |setter enableEventSquash(eventSquash)
  **********************************************************************/

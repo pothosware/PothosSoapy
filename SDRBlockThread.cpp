@@ -11,28 +11,28 @@
 /*******************************************************************
  * threading configuration
  ******************************************************************/
-void SDRBlock::setBackgroundMode(const std::string &mode)
+void SDRBlock::setCallingMode(const std::string &mode)
 {
     if (mode == "SYNCHRONOUS")
     {
-        _settersBlock = true;
+        _backgrounding = false;
         _activateWaits = true;
     }
     else if (mode == "ACTIVATE_WAITS")
     {
-        _settersBlock = false;
+        _backgrounding = true;
         _activateWaits = true;
     }
     else if (mode == "ACTIVATE_THROWS")
     {
-        _settersBlock = false;
+        _backgrounding = true;
         _activateWaits = false;
     }
     else throw Pothos::InvalidArgumentException(
         "SDRBlock::setBackgroundMode("+mode+")", "unknown background mode");
 }
 
-void SDRBlock::enableEventSquash(const bool enable)
+void SDRBlock::setEventSquash(const bool enable)
 {
     _eventSquash = enable;
 }
@@ -51,10 +51,10 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
         std::rethrow_exception(_evalError);
     }
 
-    //put setters into the args cache when blocking is disabled
-    //or when squashing is enabled during block activation
+    //put setters into the args cache when backgrounding is enabled
+    //or when squashing is enabled but only during block activation
     const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
-    const bool background = not _settersBlock or (_eventSquash and this->isActive());
+    const bool background = _backgrounding or (_eventSquash and this->isActive());
     if (isSetter and background)
     {
         _cachedArgs.emplace_back(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs));

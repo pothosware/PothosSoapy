@@ -26,10 +26,10 @@ public:
      ******************************************************************/
 
     //! Evaluate setters in a background thread as to not block
-    void setBackgroundMode(const std::string &mode);
+    void setCallingMode(const std::string &mode);
 
     //! Once activated, allow settings to queue and discard old ones
-    void enableEventSquash(const bool enable);
+    void setEventSquash(const bool enable);
 
     Pothos::Object opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs);
 
@@ -269,7 +269,7 @@ protected:
     bool isReady(void);
     void emitActivationSignals(void);
 
-    bool _settersBlock;
+    bool _backgrounding;
     bool _activateWaits;
     bool _eventSquash;
     bool _autoActivate;

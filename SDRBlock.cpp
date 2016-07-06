@@ -13,8 +13,8 @@
 #include <cassert>
 
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
-    _settersBlock(true),
-    _activateWaits(true),
+    _backgrounding(false),
+    _activateWaits(false),
     _eventSquash(false),
     _autoActivate(true),
     _direction(direction),
@@ -31,8 +31,8 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
         std::string(SOAPY_SDR_ABI_VERSION), SoapySDR::getABIVersion()));
 
     //threading options
-    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setBackgroundMode));
-    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, enableEventSquash));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setCallingMode));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setEventSquash));
 
     //streaming
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setupDevice));
