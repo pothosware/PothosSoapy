@@ -257,7 +257,31 @@
  * |preview valid
  * |tab Advanced
  *
+ * |param callingMode[Calling mode] Optional background threading for initialization.
+ * When enabled, setter calls will not block, they will be evaluated in a background thread.
+ * A secondary part of this option controls how the activate() call will handle the case
+ * when settings have not yet completed. The options for activate are to wait or to throw.
+ * |option [Synchronous calls] "SYNCHRONOUS"
+ * |option [Activate waits] "ACTIVATE_WAITS"
+ * |option [Activate throws] "ACTIVATE_THROWS"
+ * |default "ACTIVATE_WAITS"
+ * |preview disable
+ * |tab Advanced
+ *
+ * |param eventSquash[Event squashing] Optional squashing of setter calls.
+ * When the block is activated its possible for an upstream block to produce more
+ * setting events than the block can keep up with (example a slider setting the gain).
+ * Only the most recent value is actually desirable to keep and apply to the device.
+ * This option allows intermediate settings to be discarded.
+ * |option [Enable] true
+ * |option [Disable] false
+ * |default false
+ * |preview disable
+ * |tab Advanced
+ *
  * |factory @PATH@(dtype, channels)
+ * |setter setCallingMode(callingMode)
+ * |setter setEventSquash(eventSquash)
  * |initializer setupDevice(deviceArgs)
  * |initializer setupStream(streamArgs)
  * |initializer setFrontendMap(frontendMap)

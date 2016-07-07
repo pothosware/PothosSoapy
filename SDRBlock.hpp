@@ -6,6 +6,9 @@
 #include <SoapySDR/Device.hpp>
 #include <future>
 #include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 class SDRBlock : public Pothos::Block
 {
@@ -21,6 +24,13 @@ public:
     /*******************************************************************
      * Delayed method dispatch
      ******************************************************************/
+
+    //! Evaluate setters in a background thread as to not block
+    void setCallingMode(const std::string &mode);
+
+    //! Once activated, allow settings to queue and discard old ones
+    void setEventSquash(const bool enable);
+
     Pothos::Object opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs);
 
     /*******************************************************************
@@ -259,6 +269,9 @@ protected:
     bool isReady(void);
     void emitActivationSignals(void);
 
+    bool _backgrounding;
+    bool _activateWaits;
+    bool _eventSquash;
     bool _autoActivate;
     const int _direction;
     const Pothos::DType _dtype;
@@ -269,7 +282,15 @@ protected:
     bool _enableStatus;
     std::thread _statusMonitor;
 
+    //evaluation thread
+    std::mutex _argsMutex;
+    std::condition_variable _cond;
     std::vector<std::pair<std::string, Pothos::ObjectVector>> _cachedArgs;
+    std::thread _evalThread;
+    void evalThreadLoop(void);
+    std::exception_ptr _evalError;
+    std::atomic<bool> _evalThreadDone;
+    std::atomic<bool> _evalErrorValid;
     std::shared_future<SoapySDR::Device *> _deviceFuture;
 
     std::vector<Pothos::ObjectKwargs> _pendingLabels;

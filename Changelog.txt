@@ -1,5 +1,11 @@
 This this the changelog file for the Pothos SDR toolkit.
 
+Release 0.3.2 (pending)
+==========================
+
+- Added setting background thread configuration options
+- Added event squashing option for excess setter events
+
 Release 0.3.1 (2016-05-10)
 ==========================
 

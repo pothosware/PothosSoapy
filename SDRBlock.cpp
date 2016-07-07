@@ -13,6 +13,9 @@
 #include <cassert>
 
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
+    _backgrounding(false),
+    _activateWaits(false),
+    _eventSquash(false),
     _autoActivate(true),
     _direction(direction),
     _dtype(dtype),
@@ -26,6 +29,10 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     if (SoapySDR::getABIVersion() != SOAPY_SDR_ABI_VERSION) throw Pothos::Exception("SDRBlock::make()",
         Poco::format("Failed ABI check. Pothos SDR %s. Soapy SDR %s. Rebuild the module.",
         std::string(SOAPY_SDR_ABI_VERSION), SoapySDR::getABIVersion()));
+
+    //threading options
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setCallingMode));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setEventSquash));
 
     //streaming
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setupDevice));
@@ -165,12 +172,24 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
 
     //status
     this->registerSignal("status");
+
+    //start eval thread
+    _evalThreadDone = false;
+    _evalErrorValid = false;
+    _evalThread = std::thread(&SDRBlock::evalThreadLoop, this);
 }
 
 static std::mutex &getMutex(void)
 {
     static Poco::SingletonHolder<std::mutex> sh;
     return *sh.get();
+}
+
+void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)
+{
+    //protect device make -- its not thread safe
+    std::unique_lock<std::mutex> lock(getMutex());
+    _device = SoapySDR::Device::make(_toKwargs(deviceArgs));
 }
 
 SDRBlock::~SDRBlock(void)
@@ -182,6 +201,11 @@ SDRBlock::~SDRBlock(void)
     //but this actually cleans up and frees the stream object
     if (_stream != nullptr) _device->closeStream(_stream);
 
+    //stop the eval thread before cleaning up
+    _evalThreadDone = true;
+    _cond.notify_one();
+    _evalThread.join();
+
     //if for some reason we didn't complete the future
     //we have to wait on it here and catch all errors
     try {_device = _deviceFuture.get();} catch (...){}
@@ -189,62 +213,6 @@ SDRBlock::~SDRBlock(void)
     //now with the mutex locked, the device object can be released
     std::unique_lock<std::mutex> lock(getMutex());
     if (_device != nullptr) SoapySDR::Device::unmake(_device);
-}
-
-/*******************************************************************
- * Device object creation
- ******************************************************************/
-static SoapySDR::Device *makeDevice(const SoapySDR::Kwargs &deviceArgs)
-{
-    //protect device make -- its not thread safe
-    std::unique_lock<std::mutex> lock(getMutex());
-    return SoapySDR::Device::make(deviceArgs);
-}
-
-void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)
-{
-    _deviceFuture = std::async(std::launch::async, &makeDevice, _toKwargs(deviceArgs));
-}
-
-/*******************************************************************
- * Delayed method dispatch
- ******************************************************************/
-Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)
-{
-    //try to setup the device future first
-    if (name == "setupDevice") return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
-
-    //when ready forward the call to the handler
-    if (this->isReady()) return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
-
-    //cache attempted settings when not ready
-    const bool isSetter = (name.size() > 3 and name.substr(0, 3) == "set");
-    if (isSetter) _cachedArgs.push_back(std::make_pair(name, Pothos::ObjectVector(inputArgs, inputArgs+numArgs)));
-    else throw Pothos::Exception("SDRBlock::"+name+"()", "device not ready");
-    return Pothos::Object();
-}
-
-bool SDRBlock::isReady(void)
-{
-    if (_device != nullptr) return true;
-    if (_deviceFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return false;
-    _device = _deviceFuture.get();
-    assert(_device != nullptr);
-
-    //call the cached settings now that the device exists
-    for (const auto &pair : _cachedArgs)
-    {
-        POTHOS_EXCEPTION_TRY
-        {
-            Pothos::Block::opaqueCallHandler(pair.first, pair.second.data(), pair.second.size());
-        }
-        POTHOS_EXCEPTION_CATCH (const Pothos::Exception &ex)
-        {
-            poco_error_f2(Poco::Logger::get("SDRBlock"), "call %s threw: %s", pair.first, ex.displayText());
-        }
-    }
-
-    return true;
 }
 
 /*******************************************************************
