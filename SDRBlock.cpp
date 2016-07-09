@@ -144,6 +144,8 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setHardwareTime));
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getHardwareTime));
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setCommandTime));
+    this->registerCallable("setHardwareTime", Pothos::Callable(&SDRBlock::setHardwareTime).bind(std::ref(*this), 0).bind(std::string(), 2));
+    this->registerCallable("getHardwareTime", Pothos::Callable(&SDRBlock::getHardwareTime).bind(std::ref(*this), 0).bind(std::string(), 1));
 
     //sensors
     this->registerCallable("getSensors", Pothos::Callable::make<std::vector<std::string>>(&SDRBlock::getSensors).bind(std::ref(*this), 0));
@@ -651,14 +653,14 @@ std::vector<std::string> SDRBlock::getTimeSources(void) const
     return _device->listTimeSources();
 }
 
-void SDRBlock::setHardwareTime(const long long timeNs)
+void SDRBlock::setHardwareTime(const long long timeNs, const std::string &what)
 {
-    return _device->setHardwareTime(timeNs);
+    return _device->setHardwareTime(timeNs, what);
 }
 
-long long SDRBlock::getHardwareTime(void) const
+long long SDRBlock::getHardwareTime(const std::string &what) const
 {
-    return _device->getHardwareTime();
+    return _device->getHardwareTime(what);
 }
 
 void SDRBlock::setCommandTime(const long long timeNs)

@@ -191,9 +191,9 @@ public:
 
     std::vector<std::string> getTimeSources(void) const;
 
-    void setHardwareTime(const long long timeNs);
+    void setHardwareTime(const long long timeNs, const std::string &what = "");
 
-    long long getHardwareTime(void) const;
+    long long getHardwareTime(const std::string &what = "") const;
 
     void setCommandTime(const long long timeNs);
 
