@@ -27,6 +27,7 @@
  * <li>setTimeSource(source)</li>
  * <li>setHardwareTime(timeNs)</li>
  * <li>setCommandTime(timeNs)</li>
+ * <li>setGpioConfig(config)</li>
  * <li>setGlobalSettings(argMap)</li>
  * <li>setChannelSettings(argMap)</li>
  * <li>setChannelSetting(key, value)</li>
