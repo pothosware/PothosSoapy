@@ -51,69 +51,69 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setGlobalSetting));
 
     //channels -- called by setters
-    this->registerCallable("setFrequency", Pothos::Callable::make<const double, void>(&SDRBlock::setFrequency).bind(std::ref(*this), 0));
-    this->registerCallable("setFrequency", Pothos::Callable::make<const double, const Pothos::ObjectKwargs &>(&SDRBlock::setFrequency).bind(std::ref(*this), 0));
-    this->registerCallable("setFrequency", Pothos::Callable::make<const std::vector<double> &, void>(&SDRBlock::setFrequency).bind(std::ref(*this), 0));
-    this->registerCallable("setFrequency", Pothos::Callable::make<const std::vector<double> &, const Pothos::ObjectKwargs &>(&SDRBlock::setFrequency).bind(std::ref(*this), 0));
-    this->registerCallable("setGainMode", Pothos::Callable::make<const bool>(&SDRBlock::setGainMode).bind(std::ref(*this), 0));
-    this->registerCallable("setGainMode", Pothos::Callable::make<const std::vector<bool> &>(&SDRBlock::setGainMode).bind(std::ref(*this), 0));
-    this->registerCallable("setGain", Pothos::Callable::make<const double>(&SDRBlock::setGain).bind(std::ref(*this), 0));
-    this->registerCallable("setGain", Pothos::Callable::make<const Pothos::ObjectMap &>(&SDRBlock::setGain).bind(std::ref(*this), 0));
-    this->registerCallable("setGain", Pothos::Callable::make<const Pothos::ObjectVector &>(&SDRBlock::setGain).bind(std::ref(*this), 0));
-    this->registerCallable("setAntenna", Pothos::Callable::make<const std::string &>(&SDRBlock::setAntenna).bind(std::ref(*this), 0));
-    this->registerCallable("setAntenna", Pothos::Callable::make<const std::vector<std::string> &>(&SDRBlock::setAntenna).bind(std::ref(*this), 0));
-    this->registerCallable("setBandwidth", Pothos::Callable::make<const double>(&SDRBlock::setBandwidth).bind(std::ref(*this), 0));
-    this->registerCallable("setBandwidth", Pothos::Callable::make<const std::vector<double> &>(&SDRBlock::setBandwidth).bind(std::ref(*this), 0));
-    this->registerCallable("setDCOffsetMode", Pothos::Callable::make<const bool>(&SDRBlock::setDCOffsetMode).bind(std::ref(*this), 0));
-    this->registerCallable("setDCOffsetMode", Pothos::Callable::make<const std::vector<bool> &>(&SDRBlock::setDCOffsetMode).bind(std::ref(*this), 0));
-    this->registerCallable("setDCOffsetAdjust", Pothos::Callable::make<const std::complex<double> &>(&SDRBlock::setDCOffsetAdjust).bind(std::ref(*this), 0));
-    this->registerCallable("setChannelSettings", Pothos::Callable::make<const Pothos::ObjectKwargs &>(&SDRBlock::setChannelSettings).bind(std::ref(*this), 0));
-    this->registerCallable("setChannelSettings", Pothos::Callable::make<const Pothos::ObjectVector &>(&SDRBlock::setChannelSettings).bind(std::ref(*this), 0));
-    this->registerCallable("setChannelSetting", Pothos::Callable::make<const std::string &>(&SDRBlock::setChannelSetting).bind(std::ref(*this), 0));
+    this->registerCall(this, "setFrequency",       &SDRBlock::setFrequency);
+    this->registerCall(this, "setFrequency",       &SDRBlock::setFrequencyArgs);
+    this->registerCall(this, "setFrequency",       &SDRBlock::setFrequencies);
+    this->registerCall(this, "setFrequency",       &SDRBlock::setFrequenciesArgs);
+    this->registerCall(this, "setGainMode",        &SDRBlock::setGainMode);
+    this->registerCall(this, "setGainMode",        &SDRBlock::setGainModes);
+    this->registerCall(this, "setGain",            &SDRBlock::setGain);
+    this->registerCall(this, "setGain",            &SDRBlock::setGainMap);
+    this->registerCall(this, "setGain",            &SDRBlock::setGains);
+    this->registerCall(this, "setAntenna",         &SDRBlock::setAntenna);
+    this->registerCall(this, "setAntenna",         &SDRBlock::setAntennas);
+    this->registerCall(this, "setBandwidth",       &SDRBlock::setBandwidth);
+    this->registerCall(this, "setBandwidth",       &SDRBlock::setBandwidths);
+    this->registerCall(this, "setDCOffsetMode",    &SDRBlock::setDCOffsetMode);
+    this->registerCall(this, "setDCOffsetMode",    &SDRBlock::setDCOffsetModes);
+    this->registerCall(this, "setDCOffsetAdjust",  &SDRBlock::setDCOffsetAdjust);
+    this->registerCall(this, "setChannelSettings", &SDRBlock::setChannelSettings);
+    this->registerCall(this, "setChannelSettings", &SDRBlock::setChannelSettingsArgs);
+    this->registerCall(this, "setChannelSetting",  &SDRBlock::setChannelSetting);
 
     //channels
     for (size_t i = 0; i < _channels.size(); i++)
     {
         const auto chanStr = std::to_string(i);
         //freq overall with tune args
-        this->registerCallable("setFrequency"+chanStr, Pothos::Callable::make<const size_t, double, void>(&SDRBlock::setFrequency).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("setFrequency"+chanStr, Pothos::Callable::make<const size_t, double, const Pothos::ObjectKwargs &>(&SDRBlock::setFrequency).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getFrequency"+chanStr, Pothos::Callable::make<const size_t, double>(&SDRBlock::getFrequency).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setFrequency"+chanStr, Pothos::Callable(&SDRBlock::setFrequencyChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setFrequency"+chanStr, Pothos::Callable(&SDRBlock::setFrequencyChanArgs).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getFrequency"+chanStr, Pothos::Callable(&SDRBlock::getFrequency).bind(std::ref(*this), 0).bind(i, 1));
         //freq component by name
-        this->registerCallable("setFrequency"+chanStr, Pothos::Callable::make<const size_t, const std::string &, double, void>(&SDRBlock::setFrequency).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("setFrequency"+chanStr, Pothos::Callable::make<const size_t, const std::string &, double, const Pothos::ObjectKwargs &>(&SDRBlock::setFrequency).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getFrequency"+chanStr, Pothos::Callable::make<const size_t, const std::string &, double>(&SDRBlock::getFrequency).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setFrequency"+chanStr, Pothos::Callable(&SDRBlock::setFrequencyName).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setFrequency"+chanStr, Pothos::Callable(&SDRBlock::setFrequencyNameArgs).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getFrequency"+chanStr, Pothos::Callable(&SDRBlock::getFrequencyChan).bind(std::ref(*this), 0).bind(i, 1));
         //gain by name
-        this->registerCallable("setGain"+chanStr, Pothos::Callable::make<const size_t, const std::string &>(&SDRBlock::setGain).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getGain"+chanStr, Pothos::Callable::make<const size_t, const std::string &>(&SDRBlock::getGain).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setGain"+chanStr, Pothos::Callable(&SDRBlock::setGainName).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getGain"+chanStr, Pothos::Callable(&SDRBlock::getGainName).bind(std::ref(*this), 0).bind(i, 1));
         //gain overall
-        this->registerCallable("setGain"+chanStr, Pothos::Callable::make<const size_t, const double>(&SDRBlock::setGain).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getGain"+chanStr, Pothos::Callable::make<const size_t, double>(&SDRBlock::getGain).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setGain"+chanStr, Pothos::Callable(&SDRBlock::setGainChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getGain"+chanStr, Pothos::Callable(&SDRBlock::getGain).bind(std::ref(*this), 0).bind(i, 1));
         //gain dict
-        this->registerCallable("setGain"+chanStr, Pothos::Callable::make<const size_t, const Pothos::ObjectMap &>(&SDRBlock::setGain).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getGainNames"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getGainNames).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setGain"+chanStr, Pothos::Callable(&SDRBlock::setGainChanMap).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getGainNames"+chanStr, Pothos::Callable(&SDRBlock::getGainNames).bind(std::ref(*this), 0).bind(i, 1));
         //gain mode
-        this->registerCallable("setGainMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setGainMode).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getGainMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getGainMode).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setGainMode"+chanStr, Pothos::Callable(&SDRBlock::setGainModeChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getGainMode"+chanStr, Pothos::Callable(&SDRBlock::getGainMode).bind(std::ref(*this), 0).bind(i, 1));
         //antenna
-        this->registerCallable("setAntenna"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setAntenna).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getAntenna"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getAntenna).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getAntennas"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getAntennas).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setAntenna"+chanStr, Pothos::Callable(&SDRBlock::setAntennaChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getAntenna"+chanStr, Pothos::Callable(&SDRBlock::getAntenna).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getAntennas"+chanStr, Pothos::Callable(&SDRBlock::getAntennas).bind(std::ref(*this), 0).bind(i, 1));
         //bandwidth
-        this->registerCallable("setBandwidth"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setBandwidth).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getBandwidth"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getBandwidth).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getBandwidths"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getBandwidths).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setBandwidth"+chanStr, Pothos::Callable(&SDRBlock::setBandwidthChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getBandwidth"+chanStr, Pothos::Callable(&SDRBlock::getBandwidth).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getBandwidths"+chanStr, Pothos::Callable(&SDRBlock::getBandwidths).bind(std::ref(*this), 0).bind(i, 1));
         //dc offset mode
-        this->registerCallable("setDCOffsetMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setDCOffsetMode).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getDCOffsetMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getDCOffsetMode).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setDCOffsetMode"+chanStr, Pothos::Callable(&SDRBlock::setDCOffsetModeChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getDCOffsetMode"+chanStr, Pothos::Callable(&SDRBlock::getDCOffsetMode).bind(std::ref(*this), 0).bind(i, 1));
         //dc offset adjust
-        this->registerCallable("setDCOffsetAdjust"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setDCOffsetAdjust).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getDCOffsetAdjust"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getDCOffsetAdjust).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setDCOffsetAdjust"+chanStr, Pothos::Callable(&SDRBlock::setDCOffsetAdjustChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getDCOffsetAdjust"+chanStr, Pothos::Callable(&SDRBlock::getDCOffsetAdjust).bind(std::ref(*this), 0).bind(i, 1));
         //sensors
-        this->registerCallable("getSensors"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getSensors).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getSensor"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getSensor).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getSensors"+chanStr, Pothos::Callable(&SDRBlock::getSensorsChan).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getSensor"+chanStr, Pothos::Callable(&SDRBlock::getSensorChan).bind(std::ref(*this), 0).bind(i, 1));
         //settings
-        this->registerCallable("setChannelSetting"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setChannelSetting).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setChannelSetting"+chanStr, Pothos::Callable(&SDRBlock::setChannelSettingChan).bind(std::ref(*this), 0).bind(i, 1));
 
         //channel probes
         this->registerProbe("getFrequency"+chanStr);
@@ -148,13 +148,13 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     this->registerCallable("getHardwareTime", Pothos::Callable(&SDRBlock::getHardwareTime).bind(std::ref(*this), 0).bind(std::string(), 1));
 
     //sensors
-    this->registerCallable("getSensors", Pothos::Callable::make<std::vector<std::string>>(&SDRBlock::getSensors).bind(std::ref(*this), 0));
-    this->registerCallable("getSensor", Pothos::Callable::make<const std::string &>(&SDRBlock::getSensor).bind(std::ref(*this), 0));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getSensors));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getSensor));
 
     //gpio
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getGpioBanks));
-    this->registerCallable("setGpioConfig", Pothos::Callable::make<const Pothos::ObjectKwargs &>(&SDRBlock::setGpioConfig).bind(std::ref(*this), 0));
-    this->registerCallable("setGpioConfig", Pothos::Callable::make<const Pothos::ObjectVector &>(&SDRBlock::setGpioConfig).bind(std::ref(*this), 0));
+    this->registerCallable("setGpioConfig", Pothos::Callable(&SDRBlock::setGpioConfigs).bind(std::ref(*this), 0));
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setGpioConfig));
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getGpioValue));
 
     //probes
@@ -348,37 +348,37 @@ std::string SDRBlock::getFrontendMap(void) const
 
 void SDRBlock::setFrequency(const double freq)
 {
-    this->setFrequency(freq, _cachedTuneArgs[0]);
+    this->setFrequencyArgs(freq, _cachedTuneArgs[0]);
 }
 
-void SDRBlock::setFrequency(const std::vector<double> &freqs)
+void SDRBlock::setFrequencies(const std::vector<double> &freqs)
 {
-    this->setFrequency(freqs, _cachedTuneArgs[0]);
+    this->setFrequenciesArgs(freqs, _cachedTuneArgs[0]);
 }
 
-void SDRBlock::setFrequency(const size_t chan, const double freq)
+void SDRBlock::setFrequencyChan(const size_t chan, const double freq)
 {
-    this->setFrequency(chan, freq, _cachedTuneArgs[chan]);
+    this->setFrequencyChanArgs(chan, freq, _cachedTuneArgs[chan]);
 }
 
-void SDRBlock::setFrequency(const size_t chan, const std::string &name, const double freq)
+void SDRBlock::setFrequencyName(const size_t chan, const std::string &name, const double freq)
 {
-    this->setFrequency(chan, name, freq, _cachedTuneArgs[chan]);
+    this->setFrequencyNameArgs(chan, name, freq, _cachedTuneArgs[chan]);
 }
 
 //-------- setFrequency(tune args) ----------//
 
-void SDRBlock::setFrequency(const double freq, const Pothos::ObjectKwargs &args)
+void SDRBlock::setFrequencyArgs(const double freq, const Pothos::ObjectKwargs &args)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setFrequency(i, freq, args);
+    for (size_t i = 0; i < _channels.size(); i++) this->setFrequencyChanArgs(i, freq, args);
 }
 
-void SDRBlock::setFrequency(const std::vector<double> &freqs, const Pothos::ObjectKwargs &args)
+void SDRBlock::setFrequenciesArgs(const std::vector<double> &freqs, const Pothos::ObjectKwargs &args)
 {
-    for (size_t i = 0; i < freqs.size(); i++) this->setFrequency(i, freqs[i], args);
+    for (size_t i = 0; i < freqs.size(); i++) this->setFrequencyChanArgs(i, freqs[i], args);
 }
 
-void SDRBlock::setFrequency(const size_t chan, const double freq, const Pothos::ObjectKwargs &args)
+void SDRBlock::setFrequencyChanArgs(const size_t chan, const double freq, const Pothos::ObjectKwargs &args)
 {
     if (chan >= _channels.size()) return;
     _cachedTuneArgs[chan] = args;
@@ -386,7 +386,7 @@ void SDRBlock::setFrequency(const size_t chan, const double freq, const Pothos::
     _pendingLabels[chan]["rxFreq"] = Pothos::Object(_device->getFrequency(_direction, _channels.at(chan)));
 }
 
-void SDRBlock::setFrequency(const size_t chan, const std::string &name, const double freq, const Pothos::ObjectKwargs &args)
+void SDRBlock::setFrequencyNameArgs(const size_t chan, const std::string &name, const double freq, const Pothos::ObjectKwargs &args)
 {
     if (chan >= _channels.size()) return;
     _cachedTuneArgs[chan] = args;
@@ -401,7 +401,7 @@ double SDRBlock::getFrequency(const size_t chan) const
     return _device->getFrequency(_direction, _channels.at(chan));
 }
 
-double SDRBlock::getFrequency(const size_t chan, const std::string &name) const
+double SDRBlock::getFrequencyChan(const size_t chan, const std::string &name) const
 {
     if (chan >= _channels.size()) return 0.0;
     return _device->getFrequency(_direction, _channels.at(chan), name);
@@ -412,15 +412,15 @@ double SDRBlock::getFrequency(const size_t chan, const std::string &name) const
  ******************************************************************/
 void SDRBlock::setGainMode(const bool automatic)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setGainMode(i, automatic);
+    for (size_t i = 0; i < _channels.size(); i++) this->setGainModeChan(i, automatic);
 }
 
-void SDRBlock::setGainMode(const std::vector<bool> &automatic)
+void SDRBlock::setGainModes(const std::vector<bool> &automatic)
 {
-    for (size_t i = 0; i < automatic.size(); i++) this->setGainMode(i, automatic[i]);
+    for (size_t i = 0; i < automatic.size(); i++) this->setGainModeChan(i, automatic[i]);
 }
 
-void SDRBlock::setGainMode(const size_t chan, const bool automatic)
+void SDRBlock::setGainModeChan(const size_t chan, const bool automatic)
 {
     if (chan >= _channels.size()) return;
     return _device->setGainMode(_direction, _channels.at(chan), automatic);
@@ -437,36 +437,36 @@ double SDRBlock::getGainMode(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setGain(const double gain)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setGain(i, gain);
+    for (size_t i = 0; i < _channels.size(); i++) this->setGainChan(i, gain);
 }
 
-void SDRBlock::setGain(const Pothos::ObjectMap &gain)
+void SDRBlock::setGainMap(const Pothos::ObjectMap &gain)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setGain(i, gain);
+    for (size_t i = 0; i < _channels.size(); i++) this->setGainChanMap(i, gain);
 }
 
-void SDRBlock::setGain(const Pothos::ObjectVector &gains)
+void SDRBlock::setGains(const Pothos::ObjectVector &gains)
 {
     for (size_t i = 0; i < gains.size(); i++)
     {
-        if (gains[i].canConvert(typeid(Pothos::ObjectMap))) this->setGain(i, gains[i].convert<Pothos::ObjectMap>());
-        else this->setGain(i, gains[i].convert<double>());
+        if (gains[i].canConvert(typeid(Pothos::ObjectMap))) this->setGainChanMap(i, gains[i].convert<Pothos::ObjectMap>());
+        else this->setGainChan(i, gains[i].convert<double>());
     }
 }
 
-void SDRBlock::setGain(const size_t chan, const std::string &name, const double gain)
+void SDRBlock::setGainName(const size_t chan, const std::string &name, const double gain)
 {
     if (chan >= _channels.size()) return;
     return _device->setGain(_direction, _channels.at(chan), name, gain);
 }
 
-double SDRBlock::getGain(const size_t chan, const std::string &name) const
+double SDRBlock::getGainName(const size_t chan, const std::string &name) const
 {
     if (chan >= _channels.size()) return 0.0;
     return _device->getGain(_direction, _channels.at(chan), name);
 }
 
-void SDRBlock::setGain(const size_t chan, const double gain)
+void SDRBlock::setGainChan(const size_t chan, const double gain)
 {
     if (chan >= _channels.size()) return;
     return _device->setGain(_direction, _channels.at(chan), gain);
@@ -478,7 +478,7 @@ double SDRBlock::getGain(const size_t chan) const
     return _device->getGain(_direction, _channels.at(chan));
 }
 
-void SDRBlock::setGain(const size_t chan, const Pothos::ObjectMap &args)
+void SDRBlock::setGainChanMap(const size_t chan, const Pothos::ObjectMap &args)
 {
     if (chan >= _channels.size()) return;
     for (const auto &pair : args)
@@ -500,15 +500,15 @@ std::vector<std::string> SDRBlock::getGainNames(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setAntenna(const std::string &name)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setAntenna(i, name);
+    for (size_t i = 0; i < _channels.size(); i++) this->setAntennaChan(i, name);
 }
 
-void SDRBlock::setAntenna(const std::vector<std::string> &names)
+void SDRBlock::setAntennas(const std::vector<std::string> &names)
 {
-    for (size_t i = 0; i < names.size(); i++) this->setAntenna(i, names[i]);
+    for (size_t i = 0; i < names.size(); i++) this->setAntennaChan(i, names[i]);
 }
 
-void SDRBlock::setAntenna(const size_t chan, const std::string &name)
+void SDRBlock::setAntennaChan(const size_t chan, const std::string &name)
 {
     if (chan >= _channels.size()) return;
     if (name.empty()) return;
@@ -532,15 +532,15 @@ std::vector<std::string> SDRBlock::getAntennas(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setBandwidth(const double bandwidth)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setBandwidth(i, bandwidth);
+    for (size_t i = 0; i < _channels.size(); i++) this->setBandwidthChan(i, bandwidth);
 }
 
-void SDRBlock::setBandwidth(const std::vector<double> &bandwidths)
+void SDRBlock::setBandwidths(const std::vector<double> &bandwidths)
 {
-    for (size_t i = 0; i < bandwidths.size(); i++) this->setBandwidth(i, bandwidths[i]);
+    for (size_t i = 0; i < bandwidths.size(); i++) this->setBandwidthChan(i, bandwidths[i]);
 }
 
-void SDRBlock::setBandwidth(const size_t chan, const double bandwidth)
+void SDRBlock::setBandwidthChan(const size_t chan, const double bandwidth)
 {
     if (chan >= _channels.size()) return;
     if (bandwidth == 0) return;
@@ -564,15 +564,15 @@ std::vector<double> SDRBlock::getBandwidths(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setDCOffsetMode(const bool automatic)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetMode(i, automatic);
+    for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetModeChan(i, automatic);
 }
 
-void SDRBlock::setDCOffsetMode(const std::vector<bool> &automatic)
+void SDRBlock::setDCOffsetModes(const std::vector<bool> &automatic)
 {
-    for (size_t i = 0; i < automatic.size(); i++) this->setDCOffsetMode(i, automatic[i]);
+    for (size_t i = 0; i < automatic.size(); i++) this->setDCOffsetModeChan(i, automatic[i]);
 }
 
-void SDRBlock::setDCOffsetMode(const size_t chan, const bool automatic)
+void SDRBlock::setDCOffsetModeChan(const size_t chan, const bool automatic)
 {
     if (chan >= _channels.size()) return;
     return _device->setDCOffsetMode(_direction, _channels.at(chan), automatic);
@@ -589,10 +589,10 @@ bool SDRBlock::getDCOffsetMode(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setDCOffsetAdjust(const std::complex<double> &correction)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetAdjust(i, correction);
+    for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetAdjustChan(i, correction);
 }
 
-void SDRBlock::setDCOffsetAdjust(const size_t chan, const std::complex<double> &correction)
+void SDRBlock::setDCOffsetAdjustChan(const size_t chan, const std::complex<double> &correction)
 {
     if (chan >= _channels.size()) return;
     return _device->setDCOffset(_direction, _channels.at(chan), correction);
@@ -681,7 +681,7 @@ std::string SDRBlock::getSensor(const std::string &name) const
     return _device->readSensor(name);
 }
 
-std::vector<std::string> SDRBlock::getSensors(const size_t chan) const
+std::vector<std::string> SDRBlock::getSensorsChan(const size_t chan) const
 {
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->listSensors(_direction, chan);
@@ -690,7 +690,7 @@ std::vector<std::string> SDRBlock::getSensors(const size_t chan) const
     #endif
 }
 
-std::string SDRBlock::getSensor(const size_t chan, const std::string &name) const
+std::string SDRBlock::getSensorChan(const size_t chan, const std::string &name) const
 {
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->readSensor(_direction, chan, name);
@@ -750,7 +750,7 @@ void SDRBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
     #endif //SOAPY_SDR_API_HAS_MASKED_GPIO
 }
 
-void SDRBlock::setGpioConfig(const Pothos::ObjectVector &config)
+void SDRBlock::setGpioConfigs(const Pothos::ObjectVector &config)
 {
     for (const auto &entry : config)
     {
@@ -778,13 +778,13 @@ void SDRBlock::setGlobalSettings(const Pothos::ObjectKwargs &config)
     }
 }
 
-void SDRBlock::setChannelSettings(const Pothos::ObjectKwargs &config)
+void SDRBlock::setChannelSettingsArgs(const Pothos::ObjectKwargs &config)
 {
     for (const auto &pair : config)
     {
         for (size_t i = 0; i < _channels.size(); i++)
         {
-            this->setChannelSetting(i, pair.first, pair.second);
+            this->setChannelSettingChan(i, pair.first, pair.second);
         }
     }
 }
@@ -796,7 +796,7 @@ void SDRBlock::setChannelSettings(const Pothos::ObjectVector &config)
         const auto &config_i = config.at(i).convert<Pothos::ObjectKwargs>();
         for (const auto &pair : config_i)
         {
-            this->setChannelSetting(i, pair.first, pair.second);
+            this->setChannelSettingChan(i, pair.first, pair.second);
         }
     }
 }
@@ -808,10 +808,10 @@ void SDRBlock::setGlobalSetting(const std::string &key, const Pothos::Object &va
 
 void SDRBlock::setChannelSetting(const std::string &key, const Pothos::Object &value)
 {
-    for (size_t i = 0; i < _channels.size(); i++) this->setChannelSetting(i, key, value);
+    for (size_t i = 0; i < _channels.size(); i++) this->setChannelSettingChan(i, key, value);
 }
 
-void SDRBlock::setChannelSetting(const size_t chan, const std::string &key, const Pothos::Object &value)
+void SDRBlock::setChannelSettingChan(const size_t chan, const std::string &key, const Pothos::Object &value)
 {
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
     _device->writeSetting(_direction, _channels.at(chan), key, _toString(value));
