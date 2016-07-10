@@ -69,36 +69,36 @@ public:
 
     void setFrequency(const double freq);
 
-    void setFrequency(const std::vector<double> &freqs);
+    void setFrequencies(const std::vector<double> &freqs);
 
-    void setFrequency(const size_t chan, const double freq);
+    void setFrequencyChan(const size_t chan, const double freq);
 
-    void setFrequency(const size_t chan, const std::string &name, const double freq);
+    void setFrequencyName(const size_t chan, const std::string &name, const double freq);
 
     //-------- setFrequency(tune args) ----------//
 
-    void setFrequency(const double freq, const Pothos::ObjectKwargs &args);
+    void setFrequencyArgs(const double freq, const Pothos::ObjectKwargs &args);
 
-    void setFrequency(const std::vector<double> &freqs, const Pothos::ObjectKwargs &args);
+    void setFrequenciesArgs(const std::vector<double> &freqs, const Pothos::ObjectKwargs &args);
 
-    void setFrequency(const size_t chan, const double freq, const Pothos::ObjectKwargs &args);
+    void setFrequencyChanArgs(const size_t chan, const double freq, const Pothos::ObjectKwargs &args);
 
-    void setFrequency(const size_t chan, const std::string &name, const double freq, const Pothos::ObjectKwargs &args);
+    void setFrequencyNameArgs(const size_t chan, const std::string &name, const double freq, const Pothos::ObjectKwargs &args);
 
     //-------- getFrequency ----------//
 
     double getFrequency(const size_t chan) const;
 
-    double getFrequency(const size_t chan, const std::string &name) const;
+    double getFrequencyChan(const size_t chan, const std::string &name) const;
 
     /*******************************************************************
      * Gain mode
      ******************************************************************/
     void setGainMode(const bool automatic);
 
-    void setGainMode(const std::vector<bool> &automatic);
+    void setGainModes(const std::vector<bool> &automatic);
 
-    void setGainMode(const size_t chan, const bool automatic);
+    void setGainModeChan(const size_t chan, const bool automatic);
 
     double getGainMode(const size_t chan) const;
 
@@ -107,19 +107,19 @@ public:
      ******************************************************************/
     void setGain(const double gain);
 
-    void setGain(const Pothos::ObjectMap &gain);
+    void setGainMap(const Pothos::ObjectMap &gain);
 
-    void setGain(const Pothos::ObjectVector &gains);
+    void setGains(const Pothos::ObjectVector &gains);
 
-    void setGain(const size_t chan, const std::string &name, const double gain);
+    void setGainName(const size_t chan, const std::string &name, const double gain);
 
-    double getGain(const size_t chan, const std::string &name) const;
+    double getGainName(const size_t chan, const std::string &name) const;
 
-    void setGain(const size_t chan, const double gain);
+    void setGainChan(const size_t chan, const double gain);
 
     double getGain(const size_t chan) const;
 
-    void setGain(const size_t chan, const Pothos::ObjectMap &args);
+    void setGainChanMap(const size_t chan, const Pothos::ObjectMap &args);
 
     std::vector<std::string> getGainNames(const size_t chan) const;
 
@@ -128,9 +128,9 @@ public:
      ******************************************************************/
     void setAntenna(const std::string &name);
 
-    void setAntenna(const std::vector<std::string> &names);
+    void setAntennas(const std::vector<std::string> &names);
 
-    void setAntenna(const size_t chan, const std::string &name);
+    void setAntennaChan(const size_t chan, const std::string &name);
 
     std::string getAntenna(const size_t chan) const;
 
@@ -141,9 +141,9 @@ public:
      ******************************************************************/
     void setBandwidth(const double bandwidth);
 
-    void setBandwidth(const std::vector<double> &bandwidths);
+    void setBandwidths(const std::vector<double> &bandwidths);
 
-    void setBandwidth(const size_t chan, const double bandwidth);
+    void setBandwidthChan(const size_t chan, const double bandwidth);
 
     double getBandwidth(const size_t chan) const;
 
@@ -154,9 +154,9 @@ public:
      ******************************************************************/
     void setDCOffsetMode(const bool automatic);
 
-    void setDCOffsetMode(const std::vector<bool> &automatic);
+    void setDCOffsetModes(const std::vector<bool> &automatic);
 
-    void setDCOffsetMode(const size_t chan, const bool automatic);
+    void setDCOffsetModeChan(const size_t chan, const bool automatic);
 
     bool getDCOffsetMode(const size_t chan) const;
 
@@ -165,7 +165,7 @@ public:
      ******************************************************************/
     void setDCOffsetAdjust(const std::complex<double> &correction);
 
-    void setDCOffsetAdjust(const size_t chan, const std::complex<double> &correction);
+    void setDCOffsetAdjustChan(const size_t chan, const std::complex<double> &correction);
 
     std::complex<double> getDCOffsetAdjust(const size_t chan) const;
 
@@ -204,16 +204,16 @@ public:
 
     std::string getSensor(const std::string &name) const;
 
-    std::vector<std::string> getSensors(const size_t chan) const;
+    std::vector<std::string> getSensorsChan(const size_t chan) const;
 
-    std::string getSensor(const size_t chan, const std::string &name) const;
+    std::string getSensorChan(const size_t chan, const std::string &name) const;
 
     /*******************************************************************
      * GPIO
      ******************************************************************/
     std::vector<std::string> getGpioBanks(void) const;
 
-    void setGpioConfig(const Pothos::ObjectKwargs &config);
+    void setGpioConfigArgs(const Pothos::ObjectKwargs &config);
 
     void setGpioConfig(const Pothos::ObjectVector &config);
 
@@ -225,7 +225,7 @@ public:
 
     void setGlobalSettings(const Pothos::ObjectKwargs &config);
 
-    void setChannelSettings(const Pothos::ObjectKwargs &config);
+    void setChannelSettingsArgs(const Pothos::ObjectKwargs &config);
 
     //vector of kwargs version for each channel
     void setChannelSettings(const Pothos::ObjectVector &config);
@@ -239,7 +239,7 @@ public:
     void setChannelSetting(const std::string &key, const Pothos::Object &value);
 
     //write specific key to specific channel
-    void setChannelSetting(const size_t chan, const std::string &key, const Pothos::Object &value);
+    void setChannelSettingChan(const size_t chan, const std::string &key, const Pothos::Object &value);
 
     /*******************************************************************
      * Streaming implementation
