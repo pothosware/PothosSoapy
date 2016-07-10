@@ -213,9 +213,9 @@ public:
      ******************************************************************/
     std::vector<std::string> getGpioBanks(void) const;
 
-    void setGpioConfigArgs(const Pothos::ObjectKwargs &config);
+    void setGpioConfig(const Pothos::ObjectKwargs &config);
 
-    void setGpioConfig(const Pothos::ObjectVector &config);
+    void setGpioConfigs(const Pothos::ObjectVector &config);
 
     unsigned getGpioValue(const std::string &bank) const;
 

@@ -153,7 +153,7 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
 
     //gpio
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getGpioBanks));
-    this->registerCallable("setGpioConfig", Pothos::Callable(&SDRBlock::setGpioConfigArgs).bind(std::ref(*this), 0));
+    this->registerCallable("setGpioConfig", Pothos::Callable(&SDRBlock::setGpioConfigs).bind(std::ref(*this), 0));
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setGpioConfig));
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, getGpioValue));
 
@@ -707,7 +707,7 @@ std::vector<std::string> SDRBlock::getGpioBanks(void) const
     return _device->listGPIOBanks();
 }
 
-void SDRBlock::setGpioConfigArgs(const Pothos::ObjectKwargs &config)
+void SDRBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
 {
     if (config.empty()) return; //empty configs ok
 
@@ -750,14 +750,14 @@ void SDRBlock::setGpioConfigArgs(const Pothos::ObjectKwargs &config)
     #endif //SOAPY_SDR_API_HAS_MASKED_GPIO
 }
 
-void SDRBlock::setGpioConfig(const Pothos::ObjectVector &config)
+void SDRBlock::setGpioConfigs(const Pothos::ObjectVector &config)
 {
     for (const auto &entry : config)
     {
         if (not entry.canConvert(typeid(Pothos::ObjectKwargs)))
             throw Pothos::InvalidArgumentException(
             "SDRBlock::setGpioConfig()", "invalid list entry");
-        this->setGpioConfigArgs(entry.convert<Pothos::ObjectKwargs>());
+        this->setGpioConfig(entry.convert<Pothos::ObjectKwargs>());
     }
 }
 
