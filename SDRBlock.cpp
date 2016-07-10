@@ -94,7 +94,7 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
         this->registerCallable("getGainNames"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getGainNames).bind(std::ref(*this), 0).bind(i, 1));
         //gain mode
         this->registerCallable("setGainMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setGainMode).bind(std::ref(*this), 0).bind(i, 1));
-        this->registerCallable("getGainMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setGainMode).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("getGainMode"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getGainMode).bind(std::ref(*this), 0).bind(i, 1));
         //antenna
         this->registerCallable("setAntenna"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setAntenna).bind(std::ref(*this), 0).bind(i, 1));
         this->registerCallable("getAntenna"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getAntenna).bind(std::ref(*this), 0).bind(i, 1));
