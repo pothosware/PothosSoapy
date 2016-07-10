@@ -27,6 +27,9 @@
  * <li>setTimeSource(source)</li>
  * <li>setHardwareTime(timeNs)</li>
  * <li>setCommandTime(timeNs)</li>
+ * <li>setGlobalSettings(argMap)</li>
+ * <li>setChannelSettings(argMap)</li>
+ * <li>setChannelSetting(key, value)</li>
  * </ul>
  *
  * All calls which have a channel parameter also have the following call variants.

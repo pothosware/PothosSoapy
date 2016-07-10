@@ -3,6 +3,7 @@ This this the changelog file for the Pothos SDR toolkit.
 Release 0.3.2 (pending)
 ==========================
 
+- Fixed setChannelSetting() for channel bound calls
 - Fixed copy+paste typo for getGainMode() channel call
 - Added named parameter to set/getHardwareTime() calls
 - Added setting background thread configuration options

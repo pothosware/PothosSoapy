@@ -113,7 +113,7 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
         this->registerCallable("getSensors"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getSensors).bind(std::ref(*this), 0).bind(i, 1));
         this->registerCallable("getSensor"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::getSensor).bind(std::ref(*this), 0).bind(i, 1));
         //settings
-        this->registerCallable("setChannelSetting", Pothos::Callable::make<const size_t>(&SDRBlock::setChannelSetting).bind(std::ref(*this), 0).bind(i, 1));
+        this->registerCallable("setChannelSetting"+chanStr, Pothos::Callable::make<const size_t>(&SDRBlock::setChannelSetting).bind(std::ref(*this), 0).bind(i, 1));
 
         //channel probes
         this->registerProbe("getFrequency"+chanStr);
