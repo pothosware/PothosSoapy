@@ -8,11 +8,10 @@
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <Poco/SingletonHolder.h>
 #include <Poco/Format.h>
-#include <Poco/Logger.h>
-#include <mutex>
 #include <cassert>
 
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
+    _logger(Poco::Logger::get("SDRBlock")),
     _backgrounding(false),
     _activateWaits(false),
     _eventSquash(false),
@@ -665,6 +664,12 @@ long long SDRBlock::getHardwareTime(const std::string &what) const
 
 void SDRBlock::setCommandTime(const long long timeNs)
 {
+    static bool once = false;
+    if (not once)
+    {
+        once = true;
+        poco_warning(_logger, "SDRBlock::setCommandTime() deprecated, use setHardwareTime()");
+    }
     return _device->setCommandTime(timeNs);
 }
 

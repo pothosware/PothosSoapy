@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
-#include <Poco/Format.h>
-#include <Poco/Logger.h>
-#include <Poco/SingletonHolder.h>
-#include <cassert>
 #include <iostream>
 
 /*******************************************************************
@@ -134,7 +130,7 @@ void SDRBlock::evalThreadLoop(void)
         }
         POTHOS_EXCEPTION_CATCH (const Pothos::Exception &ex)
         {
-            poco_error_f2(Poco::Logger::get("SDRBlock"), "call %s threw: %s", current.first, ex.displayText());
+            poco_error_f2(_logger, "call %s threw: %s", current.first, ex.displayText());
             argsLock.lock(); //re-lock to set exception
             _evalError = std::current_exception();
             _evalErrorValid = true;

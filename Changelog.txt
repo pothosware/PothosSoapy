@@ -3,6 +3,7 @@ This this the changelog file for the Pothos SDR toolkit.
 Release 0.3.2 (pending)
 ==========================
 
+- Deprecate setCommandTime() for SoapySDR 0.5.0
 - Re-implement method registration without templates
 - Fixed setChannelSetting() for channel bound calls
 - Fixed copy+paste typo for getGainMode() channel call
