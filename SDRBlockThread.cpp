@@ -138,6 +138,10 @@ void SDRBlock::evalThreadLoop(void)
             argsLock.lock(); //re-lock to set exception
             _evalError = std::current_exception();
             _evalErrorValid = true;
+
+            //setup device failed, this thread is done evaluation
+            //the block will remain in a useless state until destructed
+            if (current.first == "setupDevice") return;
         }
     }
 }
