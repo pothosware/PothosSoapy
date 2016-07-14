@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 Josh Blum
+// Copyright (c) 2014-2016 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -121,11 +121,11 @@ private:
 void DemoController::activate(void)
 {
     //start HW time at 0 so the numbers are understandable
-    this->callVoid("setHardwareTime", 0);
+    this->emitSignal("setHardwareTime", 0);
 
     //request a tiny burst from the source block
     //the work function will print when it gets the burst
-    this->callVoid("streamControl", "ACTIVATE_BURST", 0, 100);
+    this->emitSignal("streamControl", "ACTIVATE_BURST", 0, 100);
 }
 
 void DemoController::work(void)
@@ -177,14 +177,14 @@ void DemoController::work(void)
         //perform a timed tune 0.5 seconds from the end of this burst
         const auto commandIndex = inputPort->totalElements() + inputPort->elements() + size_t(_lastKnownRxRate/2);
         const auto commandTimeNs = this->getStreamElementTime(commandIndex);
-        this->callVoid("setCommandTime", commandTimeNs);
-        this->callVoid("setFrequency", 1e9);
-        this->callVoid("setCommandTime", 0); //clear
+        this->emitSignal("setCommandTime", commandTimeNs);
+        this->emitSignal("setFrequency", 1e9);
+        this->emitSignal("setCommandTime", 0); //clear
 
         //request a timed burst 1.0 seconds from the end of this burst
         const auto streamIndex = inputPort->totalElements() + inputPort->elements() + size_t(_lastKnownRxRate);
         const auto burstTimeNs = this->getStreamElementTime(streamIndex);
-        this->callVoid("streamControl", "ACTIVATE_BURST_AT", burstTimeNs, 100);
+        this->emitSignal("streamControl", "ACTIVATE_BURST_AT", burstTimeNs, 100);
 
         /***************************************************************
          * Transmit an output burst at the same time as the input burst:

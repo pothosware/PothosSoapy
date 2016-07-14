@@ -300,7 +300,7 @@ void SDRBlock::forwardStatusLoop(void)
         #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 
         //emit the status signal
-        this->callVoid("status", status);
+        this->emitSignal("status", status);
 
         //exit the thread if stream status is not supported
         //but only after reporting this to "status" signal
@@ -828,29 +828,29 @@ void SDRBlock::setChannelSettingChan(const size_t chan, const std::string &key, 
  ******************************************************************/
 void SDRBlock::emitActivationSignals(void)
 {
-    this->callVoid("getSampleRateTriggered", this->getSampleRate());
-    this->callVoid("getSampleRatesTriggered", this->getSampleRates());
-    this->callVoid("getFrontendMapTriggered", this->getFrontendMap());
-    this->callVoid("getClockRateTriggered", this->getClockRate());
-    this->callVoid("getClockSourceTriggered", this->getClockSource());
-    this->callVoid("getClockSourcesTriggered", this->getClockSources());
-    this->callVoid("getTimeSourceTriggered", this->getTimeSource());
-    this->callVoid("getTimeSourcesTriggered", this->getTimeSources());
-    this->callVoid("getHardwareTimeTriggered", this->getHardwareTime());
-    this->callVoid("getSensorsTriggered", this->getSensors());
-    this->callVoid("getGpioBanksTriggered", this->getGpioBanks());
+    this->emitSignal("getSampleRateTriggered", this->getSampleRate());
+    this->emitSignal("getSampleRatesTriggered", this->getSampleRates());
+    this->emitSignal("getFrontendMapTriggered", this->getFrontendMap());
+    this->emitSignal("getClockRateTriggered", this->getClockRate());
+    this->emitSignal("getClockSourceTriggered", this->getClockSource());
+    this->emitSignal("getClockSourcesTriggered", this->getClockSources());
+    this->emitSignal("getTimeSourceTriggered", this->getTimeSource());
+    this->emitSignal("getTimeSourcesTriggered", this->getTimeSources());
+    this->emitSignal("getHardwareTimeTriggered", this->getHardwareTime());
+    this->emitSignal("getSensorsTriggered", this->getSensors());
+    this->emitSignal("getGpioBanksTriggered", this->getGpioBanks());
     for (size_t i = 0; i < _channels.size(); i++)
     {
         const auto chanStr = std::to_string(i);
-        this->callVoid("getFrequency"+chanStr+"Triggered", this->getFrequency(i));
-        this->callVoid("getGain"+chanStr+"Triggered", this->getGain(i));
-        this->callVoid("getGainNames"+chanStr+"Triggered", this->getGainNames(i));
-        this->callVoid("getGainMode"+chanStr+"Triggered", this->getGainMode(i));
-        this->callVoid("getAntenna"+chanStr+"Triggered", this->getAntenna(i));
-        this->callVoid("getAntennas"+chanStr+"Triggered", this->getAntennas(i));
-        this->callVoid("getBandwidth"+chanStr+"Triggered", this->getBandwidth(i));
-        this->callVoid("getBandwidths"+chanStr+"Triggered", this->getBandwidths(i));
-        this->callVoid("getDCOffsetMode"+chanStr+"Triggered", this->getDCOffsetMode(i));
+        this->emitSignal("getFrequency"+chanStr+"Triggered", this->getFrequency(i));
+        this->emitSignal("getGain"+chanStr+"Triggered", this->getGain(i));
+        this->emitSignal("getGainNames"+chanStr+"Triggered", this->getGainNames(i));
+        this->emitSignal("getGainMode"+chanStr+"Triggered", this->getGainMode(i));
+        this->emitSignal("getAntenna"+chanStr+"Triggered", this->getAntenna(i));
+        this->emitSignal("getAntennas"+chanStr+"Triggered", this->getAntennas(i));
+        this->emitSignal("getBandwidth"+chanStr+"Triggered", this->getBandwidth(i));
+        this->emitSignal("getBandwidths"+chanStr+"Triggered", this->getBandwidths(i));
+        this->emitSignal("getDCOffsetMode"+chanStr+"Triggered", this->getDCOffsetMode(i));
     }
 }
 
