@@ -6,6 +6,8 @@
 #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
 #include <Poco/SingletonHolder.h>
 #include <Poco/Format.h>
 #include <cassert>
@@ -40,6 +42,9 @@ SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::v
     if (SoapySDR::getABIVersion() != SOAPY_SDR_ABI_VERSION) throw Pothos::Exception("SDRBlock::make()",
         Poco::format("Failed ABI check. Pothos SDR %s. Soapy SDR %s. Rebuild the module.",
         std::string(SOAPY_SDR_ABI_VERSION), SoapySDR::getABIVersion()));
+
+    //hooks for overlay
+    this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, overlay));
 
     //threading options
     this->registerCall(this, POTHOS_FCN_TUPLE(SDRBlock, setCallingMode));
@@ -196,6 +201,76 @@ static std::mutex &getMutex(void)
 {
     static Poco::SingletonHolder<std::mutex> sh;
     return *sh.get();
+}
+
+std::string SDRBlock::overlay(void) const
+{
+    Poco::JSON::Object::Ptr topObj(new Poco::JSON::Object());
+
+    Poco::JSON::Array::Ptr params(new Poco::JSON::Array());
+    topObj->set("params", params);
+
+    Poco::JSON::Object::Ptr deviceArgsParam(new Poco::JSON::Object());
+    params->add(deviceArgsParam);
+
+    Poco::JSON::Array::Ptr options(new Poco::JSON::Array());
+    deviceArgsParam->set("key", "deviceArgs");
+    deviceArgsParam->set("options", options);
+
+    //editable drop down for user-controlled input
+    Poco::JSON::Object::Ptr deviceArgsWidgetKwargs(new Poco::JSON::Object());
+    deviceArgsWidgetKwargs->set("editable", true);
+    deviceArgsParam->set("widgetKwargs", deviceArgsWidgetKwargs);
+    deviceArgsParam->set("widgetType", "DropDown");
+
+    //a default option for empty/unspecified device
+    Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
+    defaultOption->set("name", "Null Device");
+    defaultOption->set("value", "{\"driver\":\"null\"}");
+    options->add(defaultOption);
+
+    //protect device make -- its not thread safe
+    std::unique_lock<std::mutex> lock(getMutex());
+
+    //enumerate devices and add to the options list
+    for (const auto &args : SoapySDR::Device::enumerate())
+    {
+        //create args dictionary
+        Poco::JSON::Object argsObj;
+        for (const auto &pair : args) argsObj.set(pair.first, pair.second);
+        std::stringstream ss; argsObj.stringify(ss);
+
+        //create displayable name
+        std::vector<std::string> nameInfo;
+        for (const auto &pair : args)
+        {
+            if (pair.first == "type" or
+                pair.first == "serial" or
+                pair.first == "addr" or
+                pair.first == "host" or
+                pair.first == "remote" or
+                pair.first.find("id") != std::string::npos)
+            {
+                nameInfo.push_back(pair.first + "=" + pair.second);
+            }
+        }
+        std::string name;
+        for (const auto &info : nameInfo)
+        {
+            if (not name.empty()) name += ", ";
+            name += info;
+        }
+        if (args.count("driver") != 0) name = args.at("driver") + "(" + name + ")";
+
+        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
+        option->set("name", name);
+        option->set("value", ss.str());
+        options->add(option);
+    }
+
+    std::stringstream ss;
+    topObj->stringify(ss, 4);
+    return ss.str();
 }
 
 void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)

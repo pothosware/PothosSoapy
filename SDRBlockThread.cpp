@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
@@ -43,6 +43,7 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
     //This probe call itself does not touch the block internals.
     const bool isProbe = (name.size() > 5 and name.substr(0, 5) == "probe");
     if (isProbe) return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
+    if (name == "overlay") return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
 
     std::unique_lock<std::mutex> argsLock(_argsMutex);
 

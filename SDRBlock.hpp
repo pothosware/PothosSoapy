@@ -17,6 +17,8 @@ public:
     SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &channels);
     virtual ~SDRBlock(void);
 
+    std::string overlay(void) const;
+
     /*******************************************************************
      * Device object creation
      ******************************************************************/
