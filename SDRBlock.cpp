@@ -891,8 +891,8 @@ void SDRBlock::deactivate(void)
 
     const int ret = _device->deactivateStream(_stream);
     #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
-    if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "deactivateStream returned " + std::string(SoapySDR::errToStr(ret)));
+    if (ret != 0) throw Pothos::Exception("SDRBlock::deactivate()", "deactivateStream returned " + std::string(SoapySDR::errToStr(ret)));
     #else
-    if (ret != 0) throw Pothos::Exception("SDRBlock::activate()", "deactivateStream returned " + std::to_string(ret));
+    if (ret != 0) throw Pothos::Exception("SDRBlock::deactivate()", "deactivateStream returned " + std::to_string(ret));
     #endif
 }
