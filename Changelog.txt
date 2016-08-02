@@ -1,6 +1,6 @@
 This this the changelog file for the Pothos SDR toolkit.
 
-Release 0.3.2 (pending)
+Release 0.4.0 (2016-08-02)
 ==========================
 
 - Switch to 0.4.0 API emitSignal() call
