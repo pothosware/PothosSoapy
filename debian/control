@@ -13,7 +13,15 @@ Homepage: https://github.com/pothosware/pothos-sdr/wiki
 Vcs-Git: https://github.com/pothosware/pothos-sdr.git
 Vcs-Browser: https://github.com/pothosware/pothos-sdr
 
-Package: pothos-sdr
+Package: pothos-modules-sdr
+Section: libs
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Depends: pothos-modules0.4-3-sdr, ${misc:Depends}
+Description: SDR source and sink blocks - metapackage
+ The Pothos data-flow software suite.
+
+Package: pothos-modules0.4-3-sdr
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
