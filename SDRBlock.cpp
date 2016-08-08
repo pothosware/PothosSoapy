@@ -10,6 +10,18 @@
 #include <Poco/Format.h>
 #include <cassert>
 
+#ifdef _MSC_VER
+#  define current_func() std::string(__FUNCTION__)
+#else
+#  define current_func() std::string(__PRETTY_FUNCTION__)
+#endif
+
+#define check_device_ptr() {if (_device == nullptr) \
+    throw Pothos::NullPointerException(Poco::format("%s - device not setup!", current_func()));}
+
+#define check_stream_ptr() {if (_stream == nullptr) \
+    throw Pothos::NullPointerException(Poco::format("%s - stream not setup!", current_func()));}
+
 SDRBlock::SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &chs):
     _logger(Poco::Logger::get("SDRBlock")),
     _backgrounding(false),
@@ -237,6 +249,7 @@ void SDRBlock::setupStream(const Pothos::ObjectKwargs &streamArgs)
 
 void SDRBlock::setSampleRate(const double rate)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++)
     {
         _device->setSampleRate(_direction, _channels.at(i), rate);
@@ -246,11 +259,13 @@ void SDRBlock::setSampleRate(const double rate)
 
 double SDRBlock::getSampleRate(void) const
 {
+    check_device_ptr();
     return _device->getSampleRate(_direction, _channels.front());
 }
 
 std::vector<double> SDRBlock::getSampleRates(void) const
 {
+    check_device_ptr();
     return _device->listSampleRates(_direction, _channels.front());
 }
 
@@ -261,6 +276,7 @@ void SDRBlock::setAutoActivate(const bool autoActivate)
 
 void SDRBlock::streamControl(const std::string &what, const long long timeNs, const size_t numElems)
 {
+    check_stream_ptr();
     int r = 0;
     if (what == "ACTIVATE")          r = _device->activateStream(_stream, 0, timeNs, numElems);
     if (what == "ACTIVATE_AT")       r = _device->activateStream(_stream, SOAPY_SDR_HAS_TIME, timeNs, numElems);
@@ -330,12 +346,14 @@ void SDRBlock::configureStatusThread(void)
  ******************************************************************/
 void SDRBlock::setFrontendMap(const std::string &mapping)
 {
+    check_device_ptr();
     if (mapping.empty()) return;
     return _device->setFrontendMapping(_direction, mapping);
 }
 
 std::string SDRBlock::getFrontendMap(void) const
 {
+    check_device_ptr();
     return _device->getFrontendMapping(_direction);
 }
 
@@ -347,21 +365,25 @@ std::string SDRBlock::getFrontendMap(void) const
 
 void SDRBlock::setFrequency(const double freq)
 {
+    check_device_ptr();
     this->setFrequencyArgs(freq, _cachedTuneArgs[0]);
 }
 
 void SDRBlock::setFrequencies(const std::vector<double> &freqs)
 {
+    check_device_ptr();
     this->setFrequenciesArgs(freqs, _cachedTuneArgs[0]);
 }
 
 void SDRBlock::setFrequencyChan(const size_t chan, const double freq)
 {
+    check_device_ptr();
     this->setFrequencyChanArgs(chan, freq, _cachedTuneArgs[chan]);
 }
 
 void SDRBlock::setFrequencyName(const size_t chan, const std::string &name, const double freq)
 {
+    check_device_ptr();
     this->setFrequencyNameArgs(chan, name, freq, _cachedTuneArgs[chan]);
 }
 
@@ -369,16 +391,19 @@ void SDRBlock::setFrequencyName(const size_t chan, const std::string &name, cons
 
 void SDRBlock::setFrequencyArgs(const double freq, const Pothos::ObjectKwargs &args)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setFrequencyChanArgs(i, freq, args);
 }
 
 void SDRBlock::setFrequenciesArgs(const std::vector<double> &freqs, const Pothos::ObjectKwargs &args)
 {
+    check_device_ptr();
     for (size_t i = 0; i < freqs.size(); i++) this->setFrequencyChanArgs(i, freqs[i], args);
 }
 
 void SDRBlock::setFrequencyChanArgs(const size_t chan, const double freq, const Pothos::ObjectKwargs &args)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     _cachedTuneArgs[chan] = args;
     _device->setFrequency(_direction, _channels.at(chan), freq, _toKwargs(args));
@@ -387,6 +412,7 @@ void SDRBlock::setFrequencyChanArgs(const size_t chan, const double freq, const 
 
 void SDRBlock::setFrequencyNameArgs(const size_t chan, const std::string &name, const double freq, const Pothos::ObjectKwargs &args)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     _cachedTuneArgs[chan] = args;
     _device->setFrequency(_direction, _channels.at(chan), name, freq, _toKwargs(args));
@@ -396,12 +422,14 @@ void SDRBlock::setFrequencyNameArgs(const size_t chan, const std::string &name, 
 
 double SDRBlock::getFrequency(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getFrequency(_direction, _channels.at(chan));
 }
 
 double SDRBlock::getFrequencyChan(const size_t chan, const std::string &name) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getFrequency(_direction, _channels.at(chan), name);
 }
@@ -411,22 +439,26 @@ double SDRBlock::getFrequencyChan(const size_t chan, const std::string &name) co
  ******************************************************************/
 void SDRBlock::setGainMode(const bool automatic)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setGainModeChan(i, automatic);
 }
 
 void SDRBlock::setGainModes(const std::vector<bool> &automatic)
 {
+    check_device_ptr();
     for (size_t i = 0; i < automatic.size(); i++) this->setGainModeChan(i, automatic[i]);
 }
 
 void SDRBlock::setGainModeChan(const size_t chan, const bool automatic)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     return _device->setGainMode(_direction, _channels.at(chan), automatic);
 }
 
 double SDRBlock::getGainMode(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return false;
     return _device->getGainMode(_direction, _channels.at(chan));
 }
@@ -436,16 +468,19 @@ double SDRBlock::getGainMode(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setGain(const double gain)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setGainChan(i, gain);
 }
 
 void SDRBlock::setGainMap(const Pothos::ObjectMap &gain)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setGainChanMap(i, gain);
 }
 
 void SDRBlock::setGains(const Pothos::ObjectVector &gains)
 {
+    check_device_ptr();
     for (size_t i = 0; i < gains.size(); i++)
     {
         if (gains[i].canConvert(typeid(Pothos::ObjectMap))) this->setGainChanMap(i, gains[i].convert<Pothos::ObjectMap>());
@@ -455,30 +490,35 @@ void SDRBlock::setGains(const Pothos::ObjectVector &gains)
 
 void SDRBlock::setGainName(const size_t chan, const std::string &name, const double gain)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     return _device->setGain(_direction, _channels.at(chan), name, gain);
 }
 
 double SDRBlock::getGainName(const size_t chan, const std::string &name) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getGain(_direction, _channels.at(chan), name);
 }
 
 void SDRBlock::setGainChan(const size_t chan, const double gain)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     return _device->setGain(_direction, _channels.at(chan), gain);
 }
 
 double SDRBlock::getGain(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getGain(_direction, _channels.at(chan));
 }
 
 void SDRBlock::setGainChanMap(const size_t chan, const Pothos::ObjectMap &args)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     for (const auto &pair : args)
     {
@@ -490,6 +530,7 @@ void SDRBlock::setGainChanMap(const size_t chan, const Pothos::ObjectMap &args)
 
 std::vector<std::string> SDRBlock::getGainNames(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return std::vector<std::string>();
     return _device->listGains(_direction, _channels.at(chan));
 }
@@ -499,16 +540,19 @@ std::vector<std::string> SDRBlock::getGainNames(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setAntenna(const std::string &name)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setAntennaChan(i, name);
 }
 
 void SDRBlock::setAntennas(const std::vector<std::string> &names)
 {
+    check_device_ptr();
     for (size_t i = 0; i < names.size(); i++) this->setAntennaChan(i, names[i]);
 }
 
 void SDRBlock::setAntennaChan(const size_t chan, const std::string &name)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     if (name.empty()) return;
     return _device->setAntenna(_direction, _channels.at(chan), name);
@@ -516,12 +560,14 @@ void SDRBlock::setAntennaChan(const size_t chan, const std::string &name)
 
 std::string SDRBlock::getAntenna(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return "";
     return _device->getAntenna(_direction, _channels.at(chan));
 }
 
 std::vector<std::string> SDRBlock::getAntennas(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return std::vector<std::string>();
     return _device->listAntennas(_direction, _channels.at(chan));
 }
@@ -531,16 +577,19 @@ std::vector<std::string> SDRBlock::getAntennas(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setBandwidth(const double bandwidth)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setBandwidthChan(i, bandwidth);
 }
 
 void SDRBlock::setBandwidths(const std::vector<double> &bandwidths)
 {
+    check_device_ptr();
     for (size_t i = 0; i < bandwidths.size(); i++) this->setBandwidthChan(i, bandwidths[i]);
 }
 
 void SDRBlock::setBandwidthChan(const size_t chan, const double bandwidth)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     if (bandwidth == 0) return;
     return _device->setBandwidth(_direction, _channels.at(chan), bandwidth);
@@ -548,12 +597,14 @@ void SDRBlock::setBandwidthChan(const size_t chan, const double bandwidth)
 
 double SDRBlock::getBandwidth(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getBandwidth(_direction, _channels.at(chan));
 }
 
 std::vector<double> SDRBlock::getBandwidths(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return std::vector<double>();
     return _device->listBandwidths(_direction, _channels.at(chan));
 }
@@ -563,22 +614,26 @@ std::vector<double> SDRBlock::getBandwidths(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setDCOffsetMode(const bool automatic)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetModeChan(i, automatic);
 }
 
 void SDRBlock::setDCOffsetModes(const std::vector<bool> &automatic)
 {
+    check_device_ptr();
     for (size_t i = 0; i < automatic.size(); i++) this->setDCOffsetModeChan(i, automatic[i]);
 }
 
 void SDRBlock::setDCOffsetModeChan(const size_t chan, const bool automatic)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     return _device->setDCOffsetMode(_direction, _channels.at(chan), automatic);
 }
 
 bool SDRBlock::getDCOffsetMode(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getDCOffsetMode(_direction, _channels.at(chan));
 }
@@ -588,17 +643,20 @@ bool SDRBlock::getDCOffsetMode(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setDCOffsetAdjust(const std::complex<double> &correction)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setDCOffsetAdjustChan(i, correction);
 }
 
 void SDRBlock::setDCOffsetAdjustChan(const size_t chan, const std::complex<double> &correction)
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return;
     return _device->setDCOffset(_direction, _channels.at(chan), correction);
 }
 
 std::complex<double> SDRBlock::getDCOffsetAdjust(const size_t chan) const
 {
+    check_device_ptr();
     if (chan >= _channels.size()) return 0.0;
     return _device->getDCOffset(_direction, _channels.at(chan));
 }
@@ -608,28 +666,33 @@ std::complex<double> SDRBlock::getDCOffsetAdjust(const size_t chan) const
  ******************************************************************/
 void SDRBlock::setClockRate(const double rate)
 {
+    check_device_ptr();
     if (rate == 0.0) return;
     return _device->setMasterClockRate(rate);
 }
 
 double SDRBlock::getClockRate(void) const
 {
+    check_device_ptr();
     return _device->getMasterClockRate();
 }
 
 void SDRBlock::setClockSource(const std::string &source)
 {
+    check_device_ptr();
     if (source.empty()) return;
     return _device->setClockSource(source);
 }
 
 std::string SDRBlock::getClockSource(void) const
 {
+    check_device_ptr();
     return _device->getClockSource();
 }
 
 std::vector<std::string> SDRBlock::getClockSources(void) const
 {
+    check_device_ptr();
     return _device->listClockSources();
 }
 
@@ -638,32 +701,38 @@ std::vector<std::string> SDRBlock::getClockSources(void) const
  ******************************************************************/
 void SDRBlock::setTimeSource(const std::string &source)
 {
+    check_device_ptr();
     if (source.empty()) return;
     return _device->setTimeSource(source);
 }
 
 std::string SDRBlock::getTimeSource(void) const
 {
+    check_device_ptr();
     return _device->getTimeSource();
 }
 
 std::vector<std::string> SDRBlock::getTimeSources(void) const
 {
+    check_device_ptr();
     return _device->listTimeSources();
 }
 
 void SDRBlock::setHardwareTime(const long long timeNs, const std::string &what)
 {
+    check_device_ptr();
     return _device->setHardwareTime(timeNs, what);
 }
 
 long long SDRBlock::getHardwareTime(const std::string &what) const
 {
+    check_device_ptr();
     return _device->getHardwareTime(what);
 }
 
 void SDRBlock::setCommandTime(const long long timeNs)
 {
+    check_device_ptr();
     static bool once = false;
     if (not once)
     {
@@ -678,16 +747,19 @@ void SDRBlock::setCommandTime(const long long timeNs)
  ******************************************************************/
 std::vector<std::string> SDRBlock::getSensors(void) const
 {
+    check_device_ptr();
     return _device->listSensors();
 }
 
 std::string SDRBlock::getSensor(const std::string &name) const
 {
+    check_device_ptr();
     return _device->readSensor(name);
 }
 
 std::vector<std::string> SDRBlock::getSensorsChan(const size_t chan) const
 {
+    check_device_ptr();
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->listSensors(_direction, chan);
     #else
@@ -697,6 +769,7 @@ std::vector<std::string> SDRBlock::getSensorsChan(const size_t chan) const
 
 std::string SDRBlock::getSensorChan(const size_t chan, const std::string &name) const
 {
+    check_device_ptr();
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->readSensor(_direction, chan, name);
     #else
@@ -709,11 +782,13 @@ std::string SDRBlock::getSensorChan(const size_t chan, const std::string &name) 
  ******************************************************************/
 std::vector<std::string> SDRBlock::getGpioBanks(void) const
 {
+    check_device_ptr();
     return _device->listGPIOBanks();
 }
 
 void SDRBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
 {
+    check_device_ptr();
     if (config.empty()) return; //empty configs ok
 
     const auto bankIt = config.find("bank");
@@ -757,6 +832,7 @@ void SDRBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
 
 void SDRBlock::setGpioConfigs(const Pothos::ObjectVector &config)
 {
+    check_device_ptr();
     for (const auto &entry : config)
     {
         if (not entry.canConvert(typeid(Pothos::ObjectKwargs)))
@@ -768,6 +844,7 @@ void SDRBlock::setGpioConfigs(const Pothos::ObjectVector &config)
 
 unsigned SDRBlock::getGpioValue(const std::string &bank) const
 {
+    check_device_ptr();
     return _device->readGPIO(bank);
 }
 
@@ -777,6 +854,7 @@ unsigned SDRBlock::getGpioValue(const std::string &bank) const
 
 void SDRBlock::setGlobalSettings(const Pothos::ObjectKwargs &config)
 {
+    check_device_ptr();
     for (const auto &pair : config)
     {
         this->setGlobalSetting(pair.first, pair.second);
@@ -785,6 +863,7 @@ void SDRBlock::setGlobalSettings(const Pothos::ObjectKwargs &config)
 
 void SDRBlock::setChannelSettingsArgs(const Pothos::ObjectKwargs &config)
 {
+    check_device_ptr();
     for (const auto &pair : config)
     {
         for (size_t i = 0; i < _channels.size(); i++)
@@ -796,6 +875,7 @@ void SDRBlock::setChannelSettingsArgs(const Pothos::ObjectKwargs &config)
 
 void SDRBlock::setChannelSettings(const Pothos::ObjectVector &config)
 {
+    check_device_ptr();
     for (size_t i = 0; i < config.size(); i++)
     {
         const auto &config_i = config.at(i).convert<Pothos::ObjectKwargs>();
@@ -808,16 +888,19 @@ void SDRBlock::setChannelSettings(const Pothos::ObjectVector &config)
 
 void SDRBlock::setGlobalSetting(const std::string &key, const Pothos::Object &value)
 {
+    check_device_ptr();
     _device->writeSetting(key, _toString(value));
 }
 
 void SDRBlock::setChannelSetting(const std::string &key, const Pothos::Object &value)
 {
+    check_device_ptr();
     for (size_t i = 0; i < _channels.size(); i++) this->setChannelSettingChan(i, key, value);
 }
 
 void SDRBlock::setChannelSettingChan(const size_t chan, const std::string &key, const Pothos::Object &value)
 {
+    check_device_ptr();
     #ifdef SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
     _device->writeSetting(_direction, _channels.at(chan), key, _toString(value));
     #endif //SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
@@ -857,6 +940,8 @@ void SDRBlock::emitActivationSignals(void)
 void SDRBlock::activate(void)
 {
     if (not this->isReady()) throw Pothos::Exception("SDRSource::activate()", "device not ready");
+
+    check_stream_ptr();
 
     if (_autoActivate)
     {
