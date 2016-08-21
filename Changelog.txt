@@ -3,6 +3,7 @@ This this the changelog file for the Pothos SDR toolkit.
 Release 0.4.1 (pending)
 ==========================
 
+- Support packet messages with SOAPY_SDR_ONE_PACKET
 - Added null pointer checks for stream and device
 
 Release 0.4.0 (2016-08-02)

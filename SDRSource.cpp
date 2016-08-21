@@ -69,6 +69,35 @@ public:
             #endif
         }
 
+        //handle packet mode when SOAPY_SDR_ONE_PACKET is specified
+        //produce a packet with matching labels and pop the buffer
+        if (_channels.size() <= 1 and (flags & SOAPY_SDR_ONE_PACKET) != 0)
+        {
+            auto outPort0 = this->output(0);
+
+            //set the packet payload
+            Pothos::Packet pkt;
+            pkt.payload = outPort0->buffer();
+            pkt.payload.setElements(ret);
+
+            //turn flags into metadata and labels
+            if ((flags & SOAPY_SDR_HAS_TIME) != 0)
+            {
+                pkt.metadata["rxTime"] = Pothos::Object(timeNs);
+                pkt.labels.emplace_back("rxTime", timeNs, 0);
+            }
+            if ((flags & SOAPY_SDR_END_BURST) != 0)
+            {
+                pkt.metadata["rxEnd"] = Pothos::Object(true);
+                pkt.labels.emplace_back("rxEnd", true, ret-1);
+            }
+
+            //consume buffer, produce message, done work()
+            outPort0->popElements(ret);
+            outPort0->postMessage(pkt);
+            return;
+        }
+
         //produce output and post pending labels
         for (auto output : this->outputs())
         {
