@@ -1,6 +1,6 @@
 This this the changelog file for the Pothos SDR toolkit.
 
-Release 0.4.1 (pending)
+Release 0.4.1 (2016-09-01)
 ==========================
 
 - Support packet messages with SOAPY_SDR_ONE_PACKET
