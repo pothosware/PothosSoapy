@@ -38,6 +38,12 @@ void SDRBlock::setEventSquash(const bool enable)
  ******************************************************************/
 Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)
 {
+    //Probes will call into the block again for the actual getter method.
+    //To avoid a locking condition, call the probe here before the mutex.
+    //This probe call itself does not touch the block internals.
+    const bool isProbe = (name.size() > 5 and name.substr(0, 5) == "probe");
+    if (isProbe) return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
+
     std::unique_lock<std::mutex> argsLock(_argsMutex);
 
     //check for existing errors, throw and clear
