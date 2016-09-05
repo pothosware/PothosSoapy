@@ -17,11 +17,11 @@ Package: pothos-modules-sdr
 Section: libs
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
-Depends: pothos-modules0.4-3-sdr, ${misc:Depends}
+Depends: pothos0.4-3-modules-sdr, ${misc:Depends}
 Description: SDR source and sink blocks - metapackage
  The Pothos data-flow software suite.
 
-Package: pothos-modules0.4-3-sdr
+Package: pothos0.4-3-modules-sdr
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
