@@ -1,6 +1,6 @@
 This this the changelog file for the Pothos SDR toolkit.
 
-Release 0.4.2 (pending)
+Release 0.4.2 (2016-09-25)
 ==========================
 
 - Fix the lockup condition with the sensor probes

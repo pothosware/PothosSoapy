@@ -1,3 +1,9 @@
+pothos-sdr (0.4.2-ppa1) unstable; urgency=low
+
+  * Release 0.4.2 (2016-09-25)
+
+ -- Josh Blum <josh@pothosware.com>  Sun, 25 Sep 2016 09:38:36 -0700
+
 pothos-sdr (0.4.1) unstable; urgency=low
 
   * Release 0.4.1 (2016-09-01)
