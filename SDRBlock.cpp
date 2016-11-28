@@ -940,6 +940,7 @@ void SDRBlock::emitActivationSignals(void)
 void SDRBlock::activate(void)
 {
     if (not this->isReady()) throw Pothos::Exception("SDRSource::activate()", "device not ready");
+    if (not _stream) throw Pothos::Exception("SDRSource::activate()", "stream not set up");
 
     check_stream_ptr();
 
