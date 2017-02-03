@@ -210,14 +210,12 @@ std::string SDRBlock::overlay(void) const
     Poco::JSON::Array::Ptr params(new Poco::JSON::Array());
     topObj->set("params", params);
 
+    //editable drop down for user-controlled input
     Poco::JSON::Object::Ptr deviceArgsParam(new Poco::JSON::Object());
     params->add(deviceArgsParam);
-
-    Poco::JSON::Array::Ptr options(new Poco::JSON::Array());
+    Poco::JSON::Array::Ptr deviceArgsOpts(new Poco::JSON::Array());
     deviceArgsParam->set("key", "deviceArgs");
-    deviceArgsParam->set("options", options);
-
-    //editable drop down for user-controlled input
+    deviceArgsParam->set("options", deviceArgsOpts);
     Poco::JSON::Object::Ptr deviceArgsWidgetKwargs(new Poco::JSON::Object());
     deviceArgsWidgetKwargs->set("editable", true);
     deviceArgsParam->set("widgetKwargs", deviceArgsWidgetKwargs);
@@ -227,7 +225,7 @@ std::string SDRBlock::overlay(void) const
     Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
     defaultOption->set("name", "Null Device");
     defaultOption->set("value", "{\"driver\":\"null\"}");
-    options->add(defaultOption);
+    deviceArgsOpts->add(defaultOption);
 
     //protect device make -- its not thread safe
     std::unique_lock<std::mutex> lock(getMutex());
@@ -257,7 +255,36 @@ std::string SDRBlock::overlay(void) const
         Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
         option->set("name", name);
         option->set("value", "{"+value+"}");
-        options->add(option);
+        deviceArgsOpts->add(option);
+    }
+
+    //antenna options
+    Poco::JSON::Object::Ptr antennaParam(new Poco::JSON::Object());
+    params->add(antennaParam);
+    Poco::JSON::Array::Ptr antennaOpts(new Poco::JSON::Array());
+    antennaParam->set("key", "antenna");
+    antennaParam->set("options", antennaOpts);
+    Poco::JSON::Object::Ptr antennaWidgetKwargs(new Poco::JSON::Object());
+    antennaWidgetKwargs->set("editable", true);
+    antennaParam->set("widgetKwargs", antennaWidgetKwargs);
+    antennaParam->set("widgetType", "DropDown");
+
+    //a default option for empty/unspecified entanna
+    Poco::JSON::Object::Ptr defaultAntennaOption(new Poco::JSON::Object());
+    defaultAntennaOption->set("name", "Default");
+    defaultAntennaOption->set("value", "\"\"");
+    antennaOpts->add(defaultAntennaOption);
+
+    //add each available antenna
+    if (_device != nullptr)
+    {
+        for (const auto &name : _device->listAntennas(_direction, _channels.front()))
+        {
+            Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
+            option->set("name", name);
+            option->set("value", "\"" + name + "\"");
+            antennaOpts->add(option);
+        }
     }
 
     std::stringstream ss;
