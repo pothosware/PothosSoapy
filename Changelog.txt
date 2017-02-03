@@ -1,5 +1,10 @@
 This this the changelog file for the Pothos SDR toolkit.
 
+Release 0.4.3 (pending)
+==========================
+
+- Added overlay support for device and antenna options
+
 Release 0.4.2 (2016-09-25)
 ==========================
 
