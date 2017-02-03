@@ -236,9 +236,12 @@ std::string SDRBlock::overlay(void) const
     for (const auto &args : SoapySDR::Device::enumerate())
     {
         //create args dictionary
-        Poco::JSON::Object argsObj;
-        for (const auto &pair : args) argsObj.set(pair.first, pair.second);
-        std::stringstream ss; argsObj.stringify(ss);
+        std::string value;
+        for (const auto &pair : args)
+        {
+            if (not value.empty()) value += ", ";
+            value += "\"" + pair.first + "\" : \"" + pair.second + "\"";
+        }
 
         //create displayable name
         //use the standard label convention, but fall-back on driver/serial
@@ -253,7 +256,7 @@ std::string SDRBlock::overlay(void) const
 
         Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
         option->set("name", name);
-        option->set("value", ss.str());
+        option->set("value", "{"+value+"}");
         options->add(option);
     }
 
