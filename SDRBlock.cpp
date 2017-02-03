@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
@@ -241,26 +241,15 @@ std::string SDRBlock::overlay(void) const
         std::stringstream ss; argsObj.stringify(ss);
 
         //create displayable name
-        std::vector<std::string> nameInfo;
-        for (const auto &pair : args)
-        {
-            if (pair.first == "type" or
-                pair.first == "serial" or
-                pair.first == "addr" or
-                pair.first == "host" or
-                pair.first == "remote" or
-                pair.first.find("id") != std::string::npos)
-            {
-                nameInfo.push_back(pair.first + "=" + pair.second);
-            }
-        }
+        //use the standard label convention, but fall-back on driver/serial
         std::string name;
-        for (const auto &info : nameInfo)
+        if (args.count("label") != 0) name = args.at("label");
+        else if (args.count("driver") != 0)
         {
-            if (not name.empty()) name += ", ";
-            name += info;
+            name = args.at("driver");
+            if (args.count("serial") != 0) name += " " + args.at("serial");
         }
-        if (args.count("driver") != 0) name = args.at("driver") + "(" + name + ")";
+        else continue; //shouldn't happen
 
         Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
         option->set("name", name);
