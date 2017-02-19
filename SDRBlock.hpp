@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -303,4 +303,7 @@ protected:
     //Save the last tune args to re-use when slots are called without args.
     //This means that args can be set once at initialization and re-used.
     std::map<size_t, Pothos::ObjectKwargs> _cachedTuneArgs;
+
+    //queried once for overlay once channel is set
+    std::vector<std::string> _antennaOptions;
 };

@@ -11,6 +11,7 @@
 #include <Poco/SingletonHolder.h>
 #include <Poco/Format.h>
 #include <cassert>
+#include <chrono>
 
 #ifdef _MSC_VER
 #  define current_func() std::string(__FUNCTION__)
@@ -203,6 +204,31 @@ static std::mutex &getMutex(void)
     return *sh.get();
 }
 
+/*!
+ * Get a list of enumerated devices.
+ * Use caching and an expired timeout to avoid over querying.
+ * This helps when the gui checks the overlay for many blocks.
+ * \return a copy of the cached result for thread safety
+ */
+static SoapySDR::KwargsList cachedEnumerate(void)
+{
+    //protect cached variables below
+    std::unique_lock<std::mutex> lock(getMutex());
+
+    static SoapySDR::KwargsList cachedHandles;
+    static std::chrono::high_resolution_clock::time_point cacheExpired;
+    static const auto expiredTimeout = std::chrono::milliseconds(3000);
+
+    //if expired, update the cached handles
+    if (std::chrono::high_resolution_clock::now() > cacheExpired)
+    {
+        cachedHandles = SoapySDR::Device::enumerate();
+        cacheExpired = std::chrono::high_resolution_clock::now() + expiredTimeout;
+    }
+
+    return cachedHandles;
+}
+
 std::string SDRBlock::overlay(void) const
 {
     Poco::JSON::Object::Ptr topObj(new Poco::JSON::Object());
@@ -227,11 +253,8 @@ std::string SDRBlock::overlay(void) const
     defaultOption->set("value", "{\"driver\":\"null\"}");
     deviceArgsOpts->add(defaultOption);
 
-    //protect device make -- its not thread safe
-    std::unique_lock<std::mutex> lock(getMutex());
-
     //enumerate devices and add to the options list
-    for (const auto &args : SoapySDR::Device::enumerate())
+    for (const auto &args : cachedEnumerate())
     {
         //create args dictionary
         std::string value;
@@ -276,15 +299,12 @@ std::string SDRBlock::overlay(void) const
     antennaOpts->add(defaultAntennaOption);
 
     //add each available antenna
-    if (_device != nullptr)
+    for (const auto &name : _antennaOptions)
     {
-        for (const auto &name : _device->listAntennas(_direction, _channels.front()))
-        {
-            Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
-            option->set("name", name);
-            option->set("value", "\"" + name + "\"");
-            antennaOpts->add(option);
-        }
+        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
+        option->set("name", name);
+        option->set("value", "\"" + name + "\"");
+        antennaOpts->add(option);
     }
 
     std::stringstream ss;
@@ -297,6 +317,7 @@ void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)
     //protect device make -- its not thread safe
     std::unique_lock<std::mutex> lock(getMutex());
     _device = SoapySDR::Device::make(_toKwargs(deviceArgs));
+    _antennaOptions = _device->listAntennas(_direction, _channels.front());
 }
 
 SDRBlock::~SDRBlock(void)
@@ -442,7 +463,8 @@ void SDRBlock::setFrontendMap(const std::string &mapping)
 {
     check_device_ptr();
     if (mapping.empty()) return;
-    return _device->setFrontendMapping(_direction, mapping);
+    _device->setFrontendMapping(_direction, mapping);
+    _antennaOptions = _device->listAntennas(_direction, _channels.front());
 }
 
 std::string SDRBlock::getFrontendMap(void) const
