@@ -210,24 +210,7 @@ static std::mutex &getMutex(void)
  * This helps when the gui checks the overlay for many blocks.
  * \return a copy of the cached result for thread safety
  */
-static SoapySDR::KwargsList cachedEnumerate(void)
-{
-    //protect cached variables below
-    std::unique_lock<std::mutex> lock(getMutex());
-
-    static SoapySDR::KwargsList cachedHandles;
-    static std::chrono::high_resolution_clock::time_point cacheExpired;
-    static const auto expiredTimeout = std::chrono::milliseconds(3000);
-
-    //if expired, update the cached handles
-    if (std::chrono::high_resolution_clock::now() > cacheExpired)
-    {
-        cachedHandles = SoapySDR::Device::enumerate();
-        cacheExpired = std::chrono::high_resolution_clock::now() + expiredTimeout;
-    }
-
-    return cachedHandles;
-}
+SoapySDR::KwargsList cachedEnumerate(void);
 
 std::string SDRBlock::overlay(void) const
 {
