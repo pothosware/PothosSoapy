@@ -306,4 +306,6 @@ protected:
 
     //queried once for overlay once channel is set
     std::vector<std::string> _antennaOptions;
+    std::vector<std::string> _timeOptions;
+    std::vector<std::string> _clockOptions;
 };

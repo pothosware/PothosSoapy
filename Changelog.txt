@@ -1,5 +1,11 @@
 This this the changelog file for the Pothos SDR toolkit.
 
+Release 0.4.4 (pending)
+==========================
+
+- Fixed overlay widget type it should be ComboBox
+- Added overlay support for time and clock source
+
 Release 0.4.3 (2017-04-23)
 ==========================
 

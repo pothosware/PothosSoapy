@@ -212,6 +212,37 @@ static std::mutex &getMutex(void)
  */
 SoapySDR::KwargsList cachedEnumerate(void);
 
+static Poco::JSON::Object::Ptr optionsToComboBox(
+    const std::string &paramKey,
+    const std::vector<std::string> &options)
+{
+    Poco::JSON::Object::Ptr paramObj(new Poco::JSON::Object());
+    Poco::JSON::Array::Ptr optionsArray(new Poco::JSON::Array());
+    paramObj->set("key", paramKey);
+    paramObj->set("options", optionsArray);
+    Poco::JSON::Object::Ptr widgetKwargs(new Poco::JSON::Object());
+    widgetKwargs->set("editable", true);
+    paramObj->set("widgetKwargs", widgetKwargs);
+    paramObj->set("widgetType", "ComboBox");
+
+    //a default option for empty/unspecified
+    Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
+    defaultOption->set("name", "Default");
+    defaultOption->set("value", "\"\"");
+    optionsArray->add(defaultOption);
+
+    //add each available option
+    for (const auto &name : options)
+    {
+        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
+        option->set("name", name);
+        option->set("value", "\"" + name + "\"");
+        optionsArray->add(option);
+    }
+
+    return paramObj;
+}
+
 std::string SDRBlock::overlay(void) const
 {
     Poco::JSON::Object::Ptr topObj(new Poco::JSON::Object());
@@ -228,7 +259,7 @@ std::string SDRBlock::overlay(void) const
     Poco::JSON::Object::Ptr deviceArgsWidgetKwargs(new Poco::JSON::Object());
     deviceArgsWidgetKwargs->set("editable", true);
     deviceArgsParam->set("widgetKwargs", deviceArgsWidgetKwargs);
-    deviceArgsParam->set("widgetType", "DropDown");
+    deviceArgsParam->set("widgetType", "ComboBox");
 
     //a default option for empty/unspecified device
     Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
@@ -264,31 +295,10 @@ std::string SDRBlock::overlay(void) const
         deviceArgsOpts->add(option);
     }
 
-    //antenna options
-    Poco::JSON::Object::Ptr antennaParam(new Poco::JSON::Object());
-    params->add(antennaParam);
-    Poco::JSON::Array::Ptr antennaOpts(new Poco::JSON::Array());
-    antennaParam->set("key", "antenna");
-    antennaParam->set("options", antennaOpts);
-    Poco::JSON::Object::Ptr antennaWidgetKwargs(new Poco::JSON::Object());
-    antennaWidgetKwargs->set("editable", true);
-    antennaParam->set("widgetKwargs", antennaWidgetKwargs);
-    antennaParam->set("widgetType", "DropDown");
-
-    //a default option for empty/unspecified entanna
-    Poco::JSON::Object::Ptr defaultAntennaOption(new Poco::JSON::Object());
-    defaultAntennaOption->set("name", "Default");
-    defaultAntennaOption->set("value", "\"\"");
-    antennaOpts->add(defaultAntennaOption);
-
-    //add each available antenna
-    for (const auto &name : _antennaOptions)
-    {
-        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
-        option->set("name", name);
-        option->set("value", "\"" + name + "\"");
-        antennaOpts->add(option);
-    }
+    //drop-down options
+    params->add(optionsToComboBox("antenna", _antennaOptions));
+    params->add(optionsToComboBox("clockSource", _clockOptions));
+    params->add(optionsToComboBox("timeSource", _timeOptions));
 
     std::stringstream ss;
     topObj->stringify(ss, 4);
@@ -301,6 +311,8 @@ void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)
     std::unique_lock<std::mutex> lock(getMutex());
     _device = SoapySDR::Device::make(_toKwargs(deviceArgs));
     _antennaOptions = _device->listAntennas(_direction, _channels.front());
+    _timeOptions = _device->listTimeSources();
+    _clockOptions = _device->listClockSources();
 }
 
 SDRBlock::~SDRBlock(void)
