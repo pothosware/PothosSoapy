@@ -1,24 +1,24 @@
-// Copyright (c) 2014-2014 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Plugin.hpp>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
 #include <SoapySDR/Version.hpp>
 #include <SoapySDR/Modules.hpp>
 #include <SoapySDR/Registry.hpp>
 #include <SoapySDR/Device.hpp>
+#include <json.hpp>
 
-static Poco::JSON::Object::Ptr enumerateSDRDevices(void)
+using json = nlohmann::json;
+
+static std::string enumerateSDRDevices(void)
 {
-    Poco::JSON::Object::Ptr topObject = new Poco::JSON::Object();
-    Poco::JSON::Object::Ptr infoObject = new Poco::JSON::Object();
-    topObject->set("SoapySDR info", infoObject);
+    json topObject;
+    auto &topObject = topObject["SoapySDR info"];
 
     //install info
-    infoObject->set("API Version", SoapySDR::getAPIVersion());
-    infoObject->set("ABI Version", SoapySDR::getABIVersion());
-    infoObject->set("Install Root", SoapySDR::getRootPath());
+    infoObject["API Version"] = SoapySDR::getAPIVersion();
+    infoObject["ABI Version"] = SoapySDR::getABIVersion();
+    infoObject["Install Root"] = SoapySDR::getRootPath();
 
     //list of device factories
     SoapySDR::loadModules();
@@ -28,22 +28,21 @@ static Poco::JSON::Object::Ptr enumerateSDRDevices(void)
         if (not factories.empty()) factories += ", ";
         factories += factory.first;
     }
-    infoObject->set("Factories", factories);
+    infoObject["Factories"] = factories;
 
     //available devices
-    Poco::JSON::Array::Ptr devicesArray = new Poco::JSON::Array();
-    topObject->set("SDR Device", devicesArray);
+    auto &devicesArray = topObject["SDR Device"];
     for (const auto &result : SoapySDR::Device::enumerate())
     {
-        Poco::JSON::Object::Ptr deviceObject = new Poco::JSON::Object();
+        json deviceObject(json::object());
         for (const auto &kwarg : result)
         {
-            deviceObject->set(kwarg.first, kwarg.second);
+            deviceObject[kwarg.first] = kwarg.second;
         }
-        devicesArray->add(deviceObject);
+        devicesArray.push_back(deviceObject);
     }
 
-    return topObject;
+    return topObject.dump();
 }
 
 pothos_static_block(registerSDRInfo)
