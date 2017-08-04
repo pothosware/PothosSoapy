@@ -13,7 +13,7 @@ using json = nlohmann::json;
 static std::string enumerateSDRDevices(void)
 {
     json topObject;
-    auto &topObject = topObject["SoapySDR info"];
+    auto &infoObject = topObject["SoapySDR info"];
 
     //install info
     infoObject["API Version"] = SoapySDR::getAPIVersion();
@@ -31,7 +31,7 @@ static std::string enumerateSDRDevices(void)
     infoObject["Factories"] = factories;
 
     //available devices
-    auto &devicesArray = topObject["SDR Device"];
+    json devicesArray(json::array());
     for (const auto &result : SoapySDR::Device::enumerate())
     {
         json deviceObject(json::object());
@@ -41,6 +41,7 @@ static std::string enumerateSDRDevices(void)
         }
         devicesArray.push_back(deviceObject);
     }
+    if (not devicesArray.empty()) topObject["SDR Device"] = devicesArray;
 
     return topObject.dump();
 }
