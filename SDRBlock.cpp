@@ -6,12 +6,13 @@
 #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
 #include <Poco/SingletonHolder.h>
 #include <Poco/Format.h>
 #include <cassert>
 #include <chrono>
+#include <json.hpp>
+
+using json = nlohmann::json;
 
 #ifdef _MSC_VER
 #  define current_func() std::string(__FUNCTION__)
@@ -212,32 +213,31 @@ static std::mutex &getMutex(void)
  */
 SoapySDR::KwargsList cachedEnumerate(void);
 
-static Poco::JSON::Object::Ptr optionsToComboBox(
+static json optionsToComboBox(
     const std::string &paramKey,
     const std::vector<std::string> &options)
 {
-    Poco::JSON::Object::Ptr paramObj(new Poco::JSON::Object());
-    Poco::JSON::Array::Ptr optionsArray(new Poco::JSON::Array());
-    paramObj->set("key", paramKey);
-    paramObj->set("options", optionsArray);
-    Poco::JSON::Object::Ptr widgetKwargs(new Poco::JSON::Object());
-    widgetKwargs->set("editable", true);
-    paramObj->set("widgetKwargs", widgetKwargs);
-    paramObj->set("widgetType", "ComboBox");
+    json paramObj;
+    paramObj["key"] = paramKey;
+    auto &optionsArray = paramObj["options"];
+    json widgetKwargs;
+    widgetKwargs["editable"] = true;
+    paramObj["widgetKwargs"] = widgetKwargs;
+    paramObj["widgetType"] = "ComboBox";
 
     //a default option for empty/unspecified
-    Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
-    defaultOption->set("name", "Default");
-    defaultOption->set("value", "\"\"");
-    optionsArray->add(defaultOption);
+    json defaultOption;
+    defaultOption["name"] = "Default";
+    defaultOption["value"] = "\"\"";
+    optionsArray.push_back(defaultOption);
 
     //add each available option
     for (const auto &name : options)
     {
-        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
-        option->set("name", name);
-        option->set("value", "\"" + name + "\"");
-        optionsArray->add(option);
+        json option;
+        option["name"] = name;
+        option["value"] = "\"" + name + "\"";
+        optionsArray.push_back(option);
     }
 
     return paramObj;
@@ -245,27 +245,24 @@ static Poco::JSON::Object::Ptr optionsToComboBox(
 
 std::string SDRBlock::overlay(void) const
 {
-    Poco::JSON::Object::Ptr topObj(new Poco::JSON::Object());
+    json topObj;
 
-    Poco::JSON::Array::Ptr params(new Poco::JSON::Array());
-    topObj->set("params", params);
+    auto &params = topObj["params"];
 
     //editable drop down for user-controlled input
-    Poco::JSON::Object::Ptr deviceArgsParam(new Poco::JSON::Object());
-    params->add(deviceArgsParam);
-    Poco::JSON::Array::Ptr deviceArgsOpts(new Poco::JSON::Array());
-    deviceArgsParam->set("key", "deviceArgs");
-    deviceArgsParam->set("options", deviceArgsOpts);
-    Poco::JSON::Object::Ptr deviceArgsWidgetKwargs(new Poco::JSON::Object());
-    deviceArgsWidgetKwargs->set("editable", true);
-    deviceArgsParam->set("widgetKwargs", deviceArgsWidgetKwargs);
-    deviceArgsParam->set("widgetType", "ComboBox");
+    json deviceArgsParam;
+    deviceArgsParam["key"] = "deviceArgs";
+    auto &deviceArgsOpts = deviceArgsParam["options"];
+    json deviceArgsWidgetKwargs;
+    deviceArgsWidgetKwargs["editable"] = true;
+    deviceArgsParam["widgetKwargs"] = deviceArgsWidgetKwargs;
+    deviceArgsParam["widgetType"] = "ComboBox";
 
     //a default option for empty/unspecified device
-    Poco::JSON::Object::Ptr defaultOption(new Poco::JSON::Object());
-    defaultOption->set("name", "Null Device");
-    defaultOption->set("value", "{\"driver\":\"null\"}");
-    deviceArgsOpts->add(defaultOption);
+    json defaultOption;
+    defaultOption["name"] = "Null Device";
+    defaultOption["value"] = "{\"driver\":\"null\"}";
+    deviceArgsOpts.push_back(defaultOption);
 
     //enumerate devices and add to the options list
     for (const auto &args : cachedEnumerate())
@@ -289,20 +286,19 @@ std::string SDRBlock::overlay(void) const
         }
         else continue; //shouldn't happen
 
-        Poco::JSON::Object::Ptr option(new Poco::JSON::Object());
-        option->set("name", name);
-        option->set("value", "{"+value+"}");
-        deviceArgsOpts->add(option);
+        json option;
+        option["name"] = name;
+        option["value"] = "{"+value+"}";
+        deviceArgsOpts.push_back(option);
     }
+    params.push_back(deviceArgsParam);
 
     //drop-down options
-    params->add(optionsToComboBox("antenna", _antennaOptions));
-    params->add(optionsToComboBox("clockSource", _clockOptions));
-    params->add(optionsToComboBox("timeSource", _timeOptions));
+    params.push_back(optionsToComboBox("antenna", _antennaOptions));
+    params.push_back(optionsToComboBox("clockSource", _clockOptions));
+    params.push_back(optionsToComboBox("timeSource", _timeOptions));
 
-    std::stringstream ss;
-    topObj->stringify(ss, 4);
-    return ss.str();
+    return topObj.dump();
 }
 
 void SDRBlock::setupDevice(const Pothos::ObjectKwargs &deviceArgs)
