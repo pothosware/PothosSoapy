@@ -220,9 +220,7 @@ static json optionsToComboBox(
     json paramObj;
     paramObj["key"] = paramKey;
     auto &optionsArray = paramObj["options"];
-    json widgetKwargs;
-    widgetKwargs["editable"] = true;
-    paramObj["widgetKwargs"] = widgetKwargs;
+    paramObj["widgetKwargs"]["editable"] = true;
     paramObj["widgetType"] = "ComboBox";
 
     //a default option for empty/unspecified
@@ -253,9 +251,7 @@ std::string SDRBlock::overlay(void) const
     json deviceArgsParam;
     deviceArgsParam["key"] = "deviceArgs";
     auto &deviceArgsOpts = deviceArgsParam["options"];
-    json deviceArgsWidgetKwargs;
-    deviceArgsWidgetKwargs["editable"] = true;
-    deviceArgsParam["widgetKwargs"] = deviceArgsWidgetKwargs;
+    deviceArgsParam["widgetKwargs"]["editable"] = true;
     deviceArgsParam["widgetType"] = "ComboBox";
 
     //a default option for empty/unspecified device
