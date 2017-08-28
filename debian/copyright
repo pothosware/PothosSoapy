@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: pothos-sdr
-Source: https://github.com/pothosware/pothos-sdr/wiki
+Upstream-Name: pothos-soapy
+Source: https://github.com/pothosware/PothosSoapy/wiki
 
 Files: *
 Copyright:

@@ -1,4 +1,4 @@
-Source: pothos-sdr
+Source: pothos-soapy
 Section: science
 Priority: optional
 Maintainer: Josh Blum <josh@pothosware.com>
@@ -7,26 +7,27 @@ Build-Depends:
     cmake (>= 2.8.9),
     libpoco-dev (>= 1.6),
     libpothos-dev,
-    libpothos-dev,
     libsoapysdr-dev
 Standards-Version: 3.9.8
-Homepage: https://github.com/pothosware/pothos-sdr/wiki
-Vcs-Git: https://github.com/pothosware/pothos-sdr.git
-Vcs-Browser: https://github.com/pothosware/pothos-sdr
+Homepage: https://github.com/pothosware/PothosSoapy/wiki
+Vcs-Git: https://github.com/pothosware/PothosSoapy.git
+Vcs-Browser: https://github.com/pothosware/PothosSoapy
 
-Package: pothos-modules-sdr
+Package: pothos-modules-soapy
 Section: libs
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
-Depends: pothos0.5-modules-sdr, ${misc:Depends}
-Description: SDR source and sink blocks - metapackage
+Depends: pothos0.5-modules-soapy, ${misc:Depends}
+Replaces: pothos-modules-sdr
+Description: Soapy SDR source and sink blocks - metapackage
  The Pothos data-flow software suite.
 
-Package: pothos0.5-modules-sdr
+Package: pothos0.5-modules-soapy
 Section: libs
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: SDR source and sink blocks
+Replaces: pothos0.5-modules-sdr
+Description: Soapy SDR source and sink blocks
  The Pothos data-flow software suite.
