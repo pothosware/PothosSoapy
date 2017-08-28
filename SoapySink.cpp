@@ -8,7 +8,7 @@
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <algorithm> //min/max
 
-class SDRSink : public SDRBlock
+class SDRSink : public SoapyBlock
 {
 public:
     static Block *make(const Pothos::DType &dtype, const std::vector<size_t> &channels)
@@ -17,7 +17,7 @@ public:
     }
 
     SDRSink(const Pothos::DType &dtype, const std::vector<size_t> &channels):
-        SDRBlock(SOAPY_SDR_TX, dtype, channels)
+        SoapyBlock(SOAPY_SDR_TX, dtype, channels)
     {
         for (size_t i = 0; i < _channels.size(); i++) this->setupInput(i, dtype);
     }

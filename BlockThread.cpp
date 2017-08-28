@@ -7,7 +7,7 @@
 /*******************************************************************
  * threading configuration
  ******************************************************************/
-void SDRBlock::setCallingMode(const std::string &mode)
+void SoapyBlock::setCallingMode(const std::string &mode)
 {
     if (mode == "SYNCHRONOUS")
     {
@@ -25,10 +25,10 @@ void SDRBlock::setCallingMode(const std::string &mode)
         _activateWaits = false;
     }
     else throw Pothos::InvalidArgumentException(
-        "SDRBlock::setBackgroundMode("+mode+")", "unknown background mode");
+        "SoapyBlock::setBackgroundMode("+mode+")", "unknown background mode");
 }
 
-void SDRBlock::setEventSquash(const bool enable)
+void SoapyBlock::setEventSquash(const bool enable)
 {
     _eventSquash = enable;
 }
@@ -36,7 +36,7 @@ void SDRBlock::setEventSquash(const bool enable)
 /*******************************************************************
  * Delayed method dispatch
  ******************************************************************/
-Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)
+Pothos::Object SoapyBlock::opaqueCallHandler(const std::string &name, const Pothos::Object *inputArgs, const size_t numArgs)
 {
     //Probes will call into the block again for the actual getter method.
     //To avoid a locking condition, call the probe here before the mutex.
@@ -73,7 +73,7 @@ Pothos::Object SDRBlock::opaqueCallHandler(const std::string &name, const Pothos
     return Pothos::Block::opaqueCallHandler(name, inputArgs, numArgs);
 }
 
-bool SDRBlock::isReady(void)
+bool SoapyBlock::isReady(void)
 {
     std::unique_lock<std::mutex> argsLock(_argsMutex);
 
@@ -97,7 +97,7 @@ bool SDRBlock::isReady(void)
 /*******************************************************************
  * Evaluation thread
  ******************************************************************/
-void SDRBlock::evalThreadLoop(void)
+void SoapyBlock::evalThreadLoop(void)
 {
     while (not _evalThreadDone)
     {
