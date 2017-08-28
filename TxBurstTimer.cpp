@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2015 Josh Blum
+// Copyright (c) 2015-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -56,7 +56,8 @@
  * |default "frameStart"
  * |widget StringEntry()
  *
- * |factory /sdr/tx_burst_timer()
+ * |factory /soapy/tx_burst_timer()
+ * |alias /sdr/tx_burst_timer
  * |setter setTimeDelta(timeDelta)
  * |setter setSampleRate(sampleRate)
  * |setter setFrameStartId(frameStartId)
@@ -161,4 +162,7 @@ private:
 };
 
 static Pothos::BlockRegistry registerTxBurstTimer(
+    "/soapy/tx_burst_timer", &TxBurstTimer::make);
+
+static Pothos::BlockRegistry registerTxBurstTimerAlias(
     "/sdr/tx_burst_timer", &TxBurstTimer::make);

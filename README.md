@@ -9,7 +9,7 @@ SDR source and sink blocks for interfacing SDR hardware with Pothos.
 
 ##Documentation
 
-* https://github.com/pothosware/pothos-sdr/wiki
+* https://github.com/pothosware/PothosSoapy/wiki
 
 ## Licensing information
 

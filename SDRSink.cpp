@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
@@ -151,4 +151,7 @@ public:
 };
 
 static Pothos::BlockRegistry registerSDRSink(
+    "/soapy/sink", &SDRSink::make);
+
+static Pothos::BlockRegistry registerSDRSinkAlias(
     "/sdr/sink", &SDRSink::make);

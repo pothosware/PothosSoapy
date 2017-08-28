@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -28,7 +28,8 @@
  * |default "complex_float32"
  * |preview disable
  *
- * |factory /sdr/demo_controller(dtype)
+ * |factory /soapy/demo_controller(dtype)
+ * |alias /sdr/demo_controller
  **********************************************************************/
 class DemoController : public Pothos::Block
 {
@@ -214,4 +215,7 @@ void DemoController::work(void)
 }
 
 static Pothos::BlockRegistry registerDemoController(
+    "/soapy/demo_controller", &DemoController::make);
+
+static Pothos::BlockRegistry registerDemoControllerAlias(
     "/sdr/demo_controller", &DemoController::make);

@@ -2,7 +2,7 @@
 # Project setup
 ########################################################################
 cmake_minimum_required(VERSION 2.8.9)
-project(PothosSDR CXX)
+project(PothosSoapy CXX)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     find_package(Pothos "0.6.0" CONFIG REQUIRED)
@@ -48,7 +48,8 @@ endif()
 ########################################################################
 set(TITLE "Source")
 set(CATEGORY "/Sources")
-set(PATH "/sdr/source")
+set(ALIAS "/sdr/source")
+set(PATH "/soapy/source")
 set(XCVR "receiver")
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
@@ -57,7 +58,8 @@ configure_file(
 
 set(TITLE "Sink")
 set(CATEGORY "/Sinks")
-set(PATH "/sdr/sink")
+set(ALIAS "/sdr/sink")
+set(PATH "/soapy/sink")
 set(XCVR "transmitter")
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
@@ -70,7 +72,7 @@ configure_file(
 include_directories(${SoapySDR_INCLUDE_DIRS})
 include_directories(${JSON_HPP_INCLUDE_DIR})
 POTHOS_MODULE_UTIL(
-    TARGET SDRSupport
+    TARGET SoapySupport
     SOURCES
         SDRBlock.cpp
         SDRSource.cpp
@@ -81,7 +83,7 @@ POTHOS_MODULE_UTIL(
         SDRBlockThread.cpp
         EnumerateCache.cpp
     LIBRARIES ${SoapySDR_LIBRARIES}
-    DESTINATION sdr
+    DESTINATION soapy
     DOC_SOURCES
         DemoController.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/SDRSourceDesc.hpp
@@ -92,11 +94,11 @@ POTHOS_MODULE_UTIL(
 ## Utility blocks
 ########################################################################
 POTHOS_MODULE_UTIL(
-    TARGET SDRUtilityBlocks
+    TARGET SoapyUtilityBlocks
     SOURCES
         ChannelAligner.cpp
         RandomDropper.cpp
         TxBurstTimer.cpp
-    DESTINATION sdr
+    DESTINATION soapy
     ENABLE_DOCS
 )

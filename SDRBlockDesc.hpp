@@ -1,14 +1,14 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 /***********************************************************************
- * |PothosDoc SDR @TITLE@
+ * |PothosDoc Soapy SDR @TITLE@
  *
- * The SDR @TITLE@ block configures the @XCVR@ end of an SDR
+ * The Soapy SDR @TITLE@ block configures the @XCVR@ end of an SDR
  * and interfaces baseband samples to 1 or more data ports.
  *
  * <h3>Runtime configuration</h3>
- * The SDR @TITLE@ block has a number of setter methods or slots
+ * The Soapy SDR @TITLE@ block has a number of setter methods or slots
  * which can be used to make configuration calls from an external block:
  * <ul>
  * <li>setSampleRate(rate)</li>
@@ -283,6 +283,7 @@
  * |tab Advanced
  *
  * |factory @PATH@(dtype, channels)
+ * |alias @ALIAS@
  * |setter setCallingMode(callingMode)
  * |setter setEventSquash(eventSquash)
  * |initializer setupDevice(deviceArgs)

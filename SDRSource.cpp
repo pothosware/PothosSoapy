@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SDRBlock.hpp"
@@ -136,4 +136,7 @@ private:
 };
 
 static Pothos::BlockRegistry registerSDRSource(
+    "/soapy/source", &SDRSource::make);
+
+static Pothos::BlockRegistry registerSDRSourceAlias(
     "/sdr/source", &SDRSource::make);
