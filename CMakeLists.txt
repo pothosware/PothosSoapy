@@ -37,9 +37,9 @@ endif()
 ########################################################################
 include(FeatureSummary)
 include(CMakeDependentOption)
-cmake_dependent_option(ENABLE_SDR "Enable Pothos SDR component" ON "Pothos_FOUND;SoapySDR_FOUND;JSON_HPP_INCLUDE_DIR" OFF)
-add_feature_info(SDR ENABLE_SDR "SDR source and sink blocks for radio hardware")
-if (NOT ENABLE_SDR)
+cmake_dependent_option(ENABLE_SOAPY "Enable Pothos SDR component" ON "Pothos_FOUND;SoapySDR_FOUND;JSON_HPP_INCLUDE_DIR" OFF)
+add_feature_info(Soapy ENABLE_SOAPY "SDR source and sink blocks for radio hardware")
+if (NOT ENABLE_SOAPY)
     return()
 endif()
 
@@ -52,8 +52,8 @@ set(ALIAS "/sdr/source")
 set(PATH "/soapy/source")
 set(XCVR "receiver")
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/SDRSourceDesc.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoapyBlockDesc.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/SoapySourceDesc.hpp
 @ONLY)
 
 set(TITLE "Sink")
@@ -62,8 +62,8 @@ set(ALIAS "/sdr/sink")
 set(PATH "/soapy/sink")
 set(XCVR "transmitter")
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/SDRSinkDesc.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoapyBlockDesc.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/SoapySinkDesc.hpp
 @ONLY)
 
 ########################################################################
@@ -74,20 +74,20 @@ include_directories(${JSON_HPP_INCLUDE_DIR})
 POTHOS_MODULE_UTIL(
     TARGET SoapySupport
     SOURCES
-        SDRBlock.cpp
-        SDRSource.cpp
-        SDRSink.cpp
+        SoapyBlock.cpp
+        SoapySource.cpp
+        SoapySink.cpp
         DemoController.cpp
         Logger.cpp
-        SDRInfo.cpp
-        SDRBlockThread.cpp
+        SoapyInfo.cpp
+        BlockThread.cpp
         EnumerateCache.cpp
     LIBRARIES ${SoapySDR_LIBRARIES}
     DESTINATION soapy
     DOC_SOURCES
         DemoController.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/SDRSourceDesc.hpp
-        ${CMAKE_CURRENT_BINARY_DIR}/SDRSinkDesc.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/SoapySourceDesc.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/SoapySinkDesc.hpp
 )
 
 ########################################################################

@@ -1,7 +1,7 @@
 // Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
-#include "SDRBlock.hpp"
+#include "SoapyBlock.hpp"
 #include <iostream>
 
 /*******************************************************************
