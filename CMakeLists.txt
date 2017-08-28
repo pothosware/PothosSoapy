@@ -91,14 +91,6 @@ POTHOS_MODULE_UTIL(
 )
 
 ########################################################################
-## Utility blocks
+## Build subdirectories
 ########################################################################
-POTHOS_MODULE_UTIL(
-    TARGET SoapyUtilityBlocks
-    SOURCES
-        ChannelAligner.cpp
-        RandomDropper.cpp
-        TxBurstTimer.cpp
-    DESTINATION soapy
-    ENABLE_DOCS
-)
+add_subdirectory(utility)
