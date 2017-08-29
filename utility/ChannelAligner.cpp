@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2015 Josh Blum
+// Copyright (c) 2015-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -25,7 +25,8 @@
  * |widget SpinBox(minimum=2)
  * |preview disable
  *
- * |factory /sdr/channel_aligner()
+ * |factory /soapy/channel_aligner()
+ * |alias /sdr/channel_aligner
  * |initializer setNumChannels(numChans)
  **********************************************************************/
 class ChannelAligner : public Pothos::Block
@@ -167,4 +168,7 @@ void ChannelAligner::work(void)
 }
 
 static Pothos::BlockRegistry registerChannelAligner(
+    "/soapy/channel_aligner", &ChannelAligner::make);
+
+static Pothos::BlockRegistry registerChannelAlignerAlias(
     "/sdr/channel_aligner", &ChannelAligner::make);

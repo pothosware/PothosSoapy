@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2015 Josh Blum
+// Copyright (c) 2015-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Framework.hpp>
@@ -26,7 +26,8 @@
  * a probability of 0 would mean that drops never occur.
  * |default 0.001
  *
- * |factory /sdr/random_dropper()
+ * |factory /soapy/random_dropper()
+ * |alias /sdr/random_dropper
  * |setter setDropSize(dropSize)
  * |setter setProbability(probability)
  **********************************************************************/
@@ -154,4 +155,7 @@ void RandomDropper::work(void)
 }
 
 static Pothos::BlockRegistry registerRandomDropper(
+    "/soapy/random_dropper", &RandomDropper::make);
+
+static Pothos::BlockRegistry registerRandomDropperAlias(
     "/sdr/random_dropper", &RandomDropper::make);

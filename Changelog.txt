@@ -1,8 +1,9 @@
-This this the changelog file for the Pothos SDR toolkit.
+This this the changelog file for the Pothos SoapySDR toolkit.
 
 Release 0.5.0 (pending)
 ==========================
 
+- Renamed the project repo from pothos-sdr to PothosSoapy
 - Audio info switched to Pothos version 0.6 device info format
 - Alternative JSON C++ library to handle JSON parsing/emitting
 

@@ -46,8 +46,8 @@ static std::string enumerateSDRDevices(void)
     return topObject.dump();
 }
 
-pothos_static_block(registerSDRInfo)
+pothos_static_block(registerSoapySDRInfo)
 {
     Pothos::PluginRegistry::addCall(
-        "/devices/sdr/info", &enumerateSDRDevices);
+        "/devices/soapy/info", &enumerateSDRDevices);
 }

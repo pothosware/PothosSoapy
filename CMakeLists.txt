@@ -2,7 +2,7 @@
 # Project setup
 ########################################################################
 cmake_minimum_required(VERSION 2.8.9)
-project(PothosSDR CXX)
+project(PothosSoapy CXX)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     find_package(Pothos "0.6.0" CONFIG REQUIRED)
@@ -37,9 +37,9 @@ endif()
 ########################################################################
 include(FeatureSummary)
 include(CMakeDependentOption)
-cmake_dependent_option(ENABLE_SDR "Enable Pothos SDR component" ON "Pothos_FOUND;SoapySDR_FOUND;JSON_HPP_INCLUDE_DIR" OFF)
-add_feature_info(SDR ENABLE_SDR "SDR source and sink blocks for radio hardware")
-if (NOT ENABLE_SDR)
+cmake_dependent_option(ENABLE_SOAPY "Enable Pothos SDR component" ON "Pothos_FOUND;SoapySDR_FOUND;JSON_HPP_INCLUDE_DIR" OFF)
+add_feature_info(Soapy ENABLE_SOAPY "SDR source and sink blocks for radio hardware")
+if (NOT ENABLE_SOAPY)
     return()
 endif()
 
@@ -48,20 +48,22 @@ endif()
 ########################################################################
 set(TITLE "Source")
 set(CATEGORY "/Sources")
-set(PATH "/sdr/source")
+set(ALIAS "/sdr/source")
+set(PATH "/soapy/source")
 set(XCVR "receiver")
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/SDRSourceDesc.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoapyBlockDesc.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/SoapySourceDesc.hpp
 @ONLY)
 
 set(TITLE "Sink")
 set(CATEGORY "/Sinks")
-set(PATH "/sdr/sink")
+set(ALIAS "/sdr/sink")
+set(PATH "/soapy/sink")
 set(XCVR "transmitter")
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/SDRBlockDesc.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/SDRSinkDesc.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SoapyBlockDesc.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/SoapySinkDesc.hpp
 @ONLY)
 
 ########################################################################
@@ -70,33 +72,25 @@ configure_file(
 include_directories(${SoapySDR_INCLUDE_DIRS})
 include_directories(${JSON_HPP_INCLUDE_DIR})
 POTHOS_MODULE_UTIL(
-    TARGET SDRSupport
+    TARGET SoapySupport
     SOURCES
-        SDRBlock.cpp
-        SDRSource.cpp
-        SDRSink.cpp
+        SoapyBlock.cpp
+        SoapySource.cpp
+        SoapySink.cpp
         DemoController.cpp
         Logger.cpp
-        SDRInfo.cpp
-        SDRBlockThread.cpp
+        SoapyInfo.cpp
+        BlockThread.cpp
         EnumerateCache.cpp
     LIBRARIES ${SoapySDR_LIBRARIES}
-    DESTINATION sdr
+    DESTINATION soapy
     DOC_SOURCES
         DemoController.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/SDRSourceDesc.hpp
-        ${CMAKE_CURRENT_BINARY_DIR}/SDRSinkDesc.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/SoapySourceDesc.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/SoapySinkDesc.hpp
 )
 
 ########################################################################
-## Utility blocks
+## Build subdirectories
 ########################################################################
-POTHOS_MODULE_UTIL(
-    TARGET SDRUtilityBlocks
-    SOURCES
-        ChannelAligner.cpp
-        RandomDropper.cpp
-        TxBurstTimer.cpp
-    DESTINATION sdr
-    ENABLE_DOCS
-)
+add_subdirectory(utility)

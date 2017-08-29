@@ -11,11 +11,11 @@
 #include <atomic>
 #include <condition_variable>
 
-class SDRBlock : public Pothos::Block
+class SoapyBlock : public Pothos::Block
 {
 public:
-    SDRBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &channels);
-    virtual ~SDRBlock(void);
+    SoapyBlock(const int direction, const Pothos::DType &dtype, const std::vector<size_t> &channels);
+    virtual ~SoapyBlock(void);
 
     std::string overlay(void) const;
 

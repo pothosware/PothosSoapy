@@ -1,13 +1,13 @@
-// Copyright (c) 2014-2016 Josh Blum
+// Copyright (c) 2014-2017 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
-#include "SDRBlock.hpp"
+#include "SoapyBlock.hpp"
 #include <SoapySDR/Version.hpp>
 #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 
-class SDRSource : public SDRBlock
+class SDRSource : public SoapyBlock
 {
 public:
     static Block *make(const Pothos::DType &dtype, const std::vector<size_t> &channels)
@@ -16,7 +16,7 @@ public:
     }
 
     SDRSource(const Pothos::DType &dtype, const std::vector<size_t> &channels):
-        SDRBlock(SOAPY_SDR_RX, dtype, channels),
+        SoapyBlock(SOAPY_SDR_RX, dtype, channels),
         _postTime(false)
     {
         for (size_t i = 0; i < _channels.size(); i++) this->setupOutput(i, dtype);
@@ -27,7 +27,7 @@ public:
      ******************************************************************/
     void activate(void)
     {
-        SDRBlock::activate();
+        SoapyBlock::activate();
         _postTime = true;
     }
 
@@ -136,4 +136,7 @@ private:
 };
 
 static Pothos::BlockRegistry registerSDRSource(
+    "/soapy/source", &SDRSource::make);
+
+static Pothos::BlockRegistry registerSDRSourceAlias(
     "/sdr/source", &SDRSource::make);
