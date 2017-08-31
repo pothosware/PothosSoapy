@@ -2,14 +2,14 @@
 
 SDR source and sink blocks for interfacing SDR hardware with Pothos.
 
-##Dependencies
+## Documentation
+
+* https://github.com/pothosware/PothosSoapy/wiki
+
+## Dependencies
 
 * Pothos library
 * SoapySDR library
-
-##Documentation
-
-* https://github.com/pothosware/PothosSoapy/wiki
 
 ## Licensing information
 
