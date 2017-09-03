@@ -2,7 +2,7 @@
 ## Feature registration
 ########################################################################
 cmake_dependent_option(ENABLE_SOAPY_UTILITY "Enable Pothos Soapy.Utility component" ON "ENABLE_SOAPY" OFF)
-add_feature_info("  Utility" ENABLE_SOAPY_UTILITY "Utility blocks that operate on SDR streams")
+add_feature_info("  SDR Utils" ENABLE_SOAPY_UTILITY "Utility blocks that operate on SDR streams")
 if (NOT ENABLE_SOAPY_UTILITY)
     return()
 endif()
