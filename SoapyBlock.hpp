@@ -5,7 +5,6 @@
 #include <Pothos/Object/Containers.hpp>
 #include <SoapySDR/Device.hpp>
 #include <Poco/Logger.h>
-#include <future>
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -296,7 +295,6 @@ protected:
     std::exception_ptr _evalError;
     std::atomic<bool> _evalThreadDone;
     std::atomic<bool> _evalErrorValid;
-    std::shared_future<SoapySDR::Device *> _deviceFuture;
 
     std::vector<Pothos::ObjectKwargs> _pendingLabels;
 

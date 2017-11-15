@@ -6,7 +6,6 @@
 #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
 #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
-#include <Poco/SingletonHolder.h>
 #include <Poco/Format.h>
 #include <cassert>
 #include <chrono>
@@ -201,8 +200,8 @@ SoapyBlock::SoapyBlock(const int direction, const Pothos::DType &dtype, const st
 
 static std::mutex &getMutex(void)
 {
-    static Poco::SingletonHolder<std::mutex> sh;
-    return *sh.get();
+    static std::mutex mutex;
+    return mutex;
 }
 
 /*!
@@ -320,10 +319,6 @@ SoapyBlock::~SoapyBlock(void)
     _evalThreadDone = true;
     _cond.notify_one();
     _evalThread.join();
-
-    //if for some reason we didn't complete the future
-    //we have to wait on it here and catch all errors
-    try {_device = _deviceFuture.get();} catch (...){}
 
     //now with the mutex locked, the device object can be released
     std::unique_lock<std::mutex> lock(getMutex());
