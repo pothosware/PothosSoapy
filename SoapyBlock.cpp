@@ -3,9 +3,7 @@
 
 #include "SoapyBlock.hpp"
 #include <SoapySDR/Version.hpp>
-#ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
-#endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <Poco/Format.h>
 #include <cassert>
 #include <chrono>
@@ -408,9 +406,7 @@ void SoapyBlock::forwardStatusLoop(void)
         status["flags"] = Pothos::Object(flags);
         if ((flags & SOAPY_SDR_HAS_TIME) != 0) status["timeNs"] = Pothos::Object(timeNs);
         if ((flags & SOAPY_SDR_END_BURST) != 0) status["endBurst"];
-        #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
         if (ret != 0) status["error"] = Pothos::Object(SoapySDR::errToStr(ret));
-        #endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 
         //emit the status signal
         this->emitSignal("status", status);
@@ -858,21 +854,13 @@ std::string SoapyBlock::getSensor(const std::string &name) const
 std::vector<std::string> SoapyBlock::getSensorsChan(const size_t chan) const
 {
     check_device_ptr();
-    #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->listSensors(_direction, chan);
-    #else
-    return std::vector<std::string>();
-    #endif
 }
 
 std::string SoapyBlock::getSensorChan(const size_t chan, const std::string &name) const
 {
     check_device_ptr();
-    #ifdef SOAPY_SDR_API_HAS_CHANNEL_SENSORS
     return _device->readSensor(_direction, chan, name);
-    #else
-    return "";
-    #endif
 }
 
 /*******************************************************************
@@ -899,8 +887,6 @@ void SoapyBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
         "SoapyBlock::setGpioConfig()", "bank name missing");
     const auto bank = bankIt->second.convert<std::string>();
 
-    #ifdef SOAPY_SDR_API_HAS_MASKED_GPIO
-
     //set data direction without mask
     if (dirIt != config.end() and maskIt == config.end())
     {
@@ -924,8 +910,6 @@ void SoapyBlock::setGpioConfig(const Pothos::ObjectKwargs &config)
     {
         _device->writeGPIO(bank, valueIt->second.convert<unsigned>(), maskIt->second.convert<unsigned>());
     }
-
-    #endif //SOAPY_SDR_API_HAS_MASKED_GPIO
 }
 
 void SoapyBlock::setGpioConfigs(const Pothos::ObjectVector &config)
@@ -999,9 +983,7 @@ void SoapyBlock::setChannelSetting(const std::string &key, const Pothos::Object 
 void SoapyBlock::setChannelSettingChan(const size_t chan, const std::string &key, const Pothos::Object &value)
 {
     check_device_ptr();
-    #ifdef SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
     _device->writeSetting(_direction, _channels.at(chan), key, _toString(value));
-    #endif //SOAPY_SDR_API_HAS_CHANNEL_SETTINGS
 }
 
 /*******************************************************************
@@ -1054,11 +1036,7 @@ void SoapyBlock::activate(void)
         {
             ret = _device->activateStream(_stream);
         }
-        #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
         if (ret != 0) throw Pothos::Exception("SoapyBlock::activate()", "activateStream returned " + std::string(SoapySDR::errToStr(ret)));
-        #else
-        if (ret != 0) throw Pothos::Exception("SoapyBlock::activate()", "activateStream returned " + std::to_string(ret));
-        #endif
     }
 
     this->emitActivationSignals();
@@ -1073,9 +1051,5 @@ void SoapyBlock::deactivate(void)
     this->configureStatusThread();
 
     const int ret = _device->deactivateStream(_stream);
-    #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
     if (ret != 0) throw Pothos::Exception("SoapyBlock::deactivate()", "deactivateStream returned " + std::string(SoapySDR::errToStr(ret)));
-    #else
-    if (ret != 0) throw Pothos::Exception("SoapyBlock::deactivate()", "deactivateStream returned " + std::to_string(ret));
-    #endif
 }

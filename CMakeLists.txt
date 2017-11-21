@@ -22,7 +22,7 @@ endif (NOT JSON_HPP_INCLUDE_DIR)
 ########################################################################
 ## Find SoapySDR
 ########################################################################
-find_package(SoapySDR CONFIG)
+find_package(SoapySDR "0.6.0" CONFIG)
 
 if (SoapySDR_FOUND)
     message(STATUS "SoapySDR_VERSION: ${SoapySDR_VERSION}")

@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SoapyBlock.hpp"
-#include <SoapySDR/Version.hpp>
-#ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
-#endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <algorithm> //min/max
 
 class SDRSink : public SoapyBlock
@@ -77,11 +74,7 @@ public:
         else
         {
             for (auto input : this->inputs()) input->consume(numElems); //consume error region
-            #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
             throw Pothos::Exception("SDRSink::work()", "writeStream "+std::string(SoapySDR::errToStr(ret)));
-            #else
-            throw Pothos::Exception("SDRSink::work()", "writeStream "+std::to_string(ret));
-            #endif
         }
     }
 
@@ -141,11 +134,7 @@ public:
         else
         {
             inPort0->popMessage();
-            #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
             throw Pothos::Exception("SDRSink::work()", "writeStream "+std::string(SoapySDR::errToStr(ret)));
-            #else
-            throw Pothos::Exception("SDRSink::work()", "writeStream "+std::to_string(ret));
-            #endif
         }
     }
 };

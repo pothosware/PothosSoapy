@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SoapyBlock.hpp"
-#include <SoapySDR/Version.hpp>
-#ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
 #include <SoapySDR/Errors.hpp>
-#endif //SOAPY_SDR_API_HAS_ERR_TO_STR
 
 class SDRSource : public SoapyBlock
 {
@@ -62,11 +59,7 @@ public:
             if (ret == SOAPY_SDR_OVERFLOW) _postTime = true;
             if (ret == SOAPY_SDR_OVERFLOW) return this->yield();
             //otherwise throw an exception with the error code
-            #ifdef SOAPY_SDR_API_HAS_ERR_TO_STR
             throw Pothos::Exception("SDRSource::work()", "readStream "+std::string(SoapySDR::errToStr(ret)));
-            #else
-            throw Pothos::Exception("SDRSource::work()", "readStream "+std::to_string(ret));
-            #endif
         }
 
         //handle packet mode when SOAPY_SDR_ONE_PACKET is specified
