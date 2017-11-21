@@ -110,14 +110,18 @@ public:
         if (_postTime and (flags & SOAPY_SDR_HAS_TIME) != 0)
         {
             _postTime = false;
-            const Pothos::Label lbl("rxTime", timeNs, 0);
-            for (auto output : this->outputs()) output->postLabel(lbl);
+            for (auto output : this->outputs())
+            {
+                output->postLabel("rxTime", timeNs, 0);
+            }
         }
         if ((flags & SOAPY_SDR_END_BURST) != 0)
         {
             _postTime = true; //discontinuity: repost time on next receive
-            const Pothos::Label lbl("rxEnd", true, ret-1);
-            for (auto output : this->outputs()) output->postLabel(lbl);
+            for (auto output : this->outputs())
+            {
+                output->postLabel("rxEnd", true, ret-1);
+            }
         }
 
         //discontinuity signaled but ok packet? post time on next call
