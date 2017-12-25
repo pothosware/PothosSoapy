@@ -7,6 +7,7 @@ Build-Depends:
     cmake (>= 2.8.9),
     libpoco-dev (>= 1.6),
     libpothos-dev,
+    nlohmann-json-dev,
     libsoapysdr-dev
 Standards-Version: 4.1.1
 Homepage: https://github.com/pothosware/PothosSoapy/wiki
