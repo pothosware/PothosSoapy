@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Josh Blum
+// Copyright (c) 2014-2019 Josh Blum
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SoapyBlock.hpp"
@@ -1031,6 +1031,7 @@ void SoapyBlock::activate(void)
         {
             const auto delta = long(1e9*0.05); //50ms in the future for time-aligned streaming
             ret = _device->activateStream(_stream, SOAPY_SDR_HAS_TIME, _device->getHardwareTime()+delta);
+            if (ret == SOAPY_SDR_NOT_SUPPORTED) ret = _device->activateStream(_stream); //try again, no time
         }
         else
         {
