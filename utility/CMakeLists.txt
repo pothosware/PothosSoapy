@@ -14,8 +14,10 @@ POTHOS_MODULE_UTIL(
     TARGET SoapyUtilityBlocks
     SOURCES
         ChannelAligner.cpp
+        Converter.cpp
         RandomDropper.cpp
         TxBurstTimer.cpp
+    LIBRARIES ${SoapySDR_LIBRARIES}
     DESTINATION soapy
     ENABLE_DOCS
 )
