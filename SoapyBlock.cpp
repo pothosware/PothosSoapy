@@ -1,12 +1,15 @@
 // Copyright (c) 2014-2019 Josh Blum
+//                    2020 Nicholas Corgan
 // SPDX-License-Identifier: BSL-1.0
 
 #include "SoapyBlock.hpp"
 #include <SoapySDR/Version.hpp>
 #include <SoapySDR/Errors.hpp>
+#include <SoapySDR/Logger.hpp>
 #include <Poco/Format.h>
 #include <cassert>
 #include <chrono>
+#include <unordered_map>
 #include <json.hpp>
 
 using json = nlohmann::json;
@@ -189,6 +192,9 @@ SoapyBlock::SoapyBlock(const int direction, const Pothos::DType &dtype, const st
 
     //status
     this->registerSignal("status");
+
+    //other
+    this->registerCall(this, POTHOS_FCN_TUPLE(SoapyBlock, setLogLevel));
 
     //start eval thread
     _evalThreadDone = false;
@@ -984,6 +990,34 @@ void SoapyBlock::setChannelSettingChan(const size_t chan, const std::string &key
 {
     check_device_ptr();
     _device->writeSetting(_direction, _channels.at(chan), key, _toString(value));
+}
+
+/*******************************************************************
+ * Logging
+ ******************************************************************/
+void SoapyBlock::setLogLevel(const std::string& logLevel)
+{
+    static const std::unordered_map<std::string, SoapySDRLogLevel> LogLevelMap =
+    {
+        {"Fatal",    SOAPY_SDR_FATAL},
+        {"Critical", SOAPY_SDR_CRITICAL},
+        {"Error",    SOAPY_SDR_ERROR},
+        {"Warning",  SOAPY_SDR_WARNING},
+        {"Notice",   SOAPY_SDR_NOTICE},
+        {"Info",     SOAPY_SDR_INFO},
+        {"Debug",    SOAPY_SDR_DEBUG},
+        {"Trace",    SOAPY_SDR_TRACE},
+        {"SSI",      SOAPY_SDR_SSI},
+    };
+    auto mapIter = LogLevelMap.find(logLevel);
+    if(LogLevelMap.end() == mapIter)
+    {
+        throw Pothos::InvalidArgumentException(
+                  "Invalid Soapy SDR log level",
+                  logLevel);
+    }
+
+    SoapySDR::setLogLevel(mapIter->second);
 }
 
 /*******************************************************************
