@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Nicholas Corgan
+// Copyright (c) 2019-2020 Nicholas Corgan
 // SPDX-License-Identifier: BSL-1.0
 
 #include <Pothos/Exception.hpp>
@@ -34,14 +34,14 @@ static const std::unordered_map<std::string, std::string> PothosDTypeToSoapyForm
 };
 
 /***********************************************************************
- * |PothosDoc SoapySDR Converter
+ * |PothosDoc Soapy SDR Converter
  *
- * Uses SoapySDR's converter infrastructure to convert all elements of the
+ * Uses Soapy SDR's converter infrastructure to convert all elements of the
  * input buffer to the given output type and output the result into the output
  * buffer.
  *
  * The performance of this block depends on the converters registered with
- * SoapySDR. This block will automatically use the fastest converter for the
+ * Soapy SDR. This block will automatically use the fastest converter for the
  * given pair of types.
  *
  * |category /SDR
@@ -96,7 +96,7 @@ public:
         if(availableTargetFormats.end() == targetFormatIter)
         {
             throw Pothos::InvalidArgumentException(
-                      "No SoapySDR converter is registered for the given types",
+                      "No Soapy SDR converter is registered for the given types",
                       Poco::format(
                           "%s -> %s",
                           inputDType.name(),
@@ -173,7 +173,7 @@ private:
         else
         {
             throw Pothos::InvalidArgumentException(
-                      "The given DType does not have SoapySDR converter support",
+                      "The given DType does not have Soapy SDR converter support",
                       dtype.name());
         }
     }
