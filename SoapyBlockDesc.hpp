@@ -1,4 +1,5 @@
 // Copyright (c) 2014-2017 Josh Blum
+//                    2020 Nicholas Corgan
 // SPDX-License-Identifier: BSL-1.0
 
 /***********************************************************************
@@ -282,6 +283,24 @@
  * |preview disable
  * |tab Advanced
  *
+ * |param logLevel[Log level] The Soapy SDR log level.
+ * This configures Soapy SDR's logging to a given verbosity. This level is
+ * global and will affect other SDR Source and SDR Sink blocks. Note that
+ * this value will be overridden by the <b>SOAPY_SDR_LOG_LEVEL</b> environment
+ * variable, if set.
+ * |widget ComboBox(editable=false)
+ * |default "Info"
+ * |option [Fatal] "Fatal"
+ * |option [Critical] "Critical"
+ * |option [Error] "Error"
+ * |option [Warning] "Warning"
+ * |option [Notice] "Notice"
+ * |option [Info] "Info"
+ * |option [Debug] "Debug"
+ * |option [Trace] "Trace"
+ * |preview disable
+ * |tab Advanced
+ *
  * |factory @PATH@(dtype, channels)
  * |alias @ALIAS@
  * |setter setCallingMode(callingMode)
@@ -304,4 +323,5 @@
  * |setter setEnableStatus(enableStatus)
  * |setter setGlobalSettings(globalSettings)
  * |setter setChannelSettings(channelSettings)
+ * |setter setLogLevel(logLevel)
  **********************************************************************/

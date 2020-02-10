@@ -244,6 +244,11 @@ public:
     void setChannelSettingChan(const size_t chan, const std::string &key, const Pothos::Object &value);
 
     /*******************************************************************
+     * Logging
+     ******************************************************************/
+    void setLogLevel(const std::string& logLevel);
+
+    /*******************************************************************
      * Streaming implementation
      ******************************************************************/
     virtual void activate(void);
