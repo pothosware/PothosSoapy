@@ -18,12 +18,12 @@ Package: pothos-modules-soapy
 Section: libs
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
-Depends: pothos0.6-modules-soapy, ${misc:Depends}
+Depends: pothos0.7-modules-soapy, ${misc:Depends}
 Replaces: pothos-modules-sdr
 Description: Soapy SDR source and sink blocks - metapackage
  The Pothos data-flow software suite.
 
-Package: pothos0.6-modules-soapy
+Package: pothos0.7-modules-soapy
 Section: libs
 Architecture: any
 Multi-Arch: same

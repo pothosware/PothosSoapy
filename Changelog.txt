@@ -3,6 +3,8 @@ This this the changelog file for the Pothos SoapySDR toolkit.
 Release 0.5.1 (pending)
 ==========================
 
+- Added a soapysdr stream converter block
+- Added calls to set the logging level
 - Source activateStream() fallback when time flag not supported
 - Added SoapySDR Converter block
 
