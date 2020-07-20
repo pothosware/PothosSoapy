@@ -1,6 +1,6 @@
 This this the changelog file for the Pothos SoapySDR toolkit.
 
-Release 0.5.1 (pending)
+Release 0.5.1 (2020-07-19)
 ==========================
 
 - Added a soapysdr stream converter block

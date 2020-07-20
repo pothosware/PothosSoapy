@@ -1,3 +1,9 @@
+pothos-soapy (0.5.1-1) unstable; urgency=low
+
+  * Release 0.5.1 (2020-07-19)
+
+ -- Josh Blum <josh@pothosware.com>  Sun, 19 Jul 2020 22:09:16 -0000
+
 pothos-soapy (0.5.0-1) unstable; urgency=low
 
   * Release 0.5.0 (2017-12-25)
