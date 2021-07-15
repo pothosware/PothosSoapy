@@ -1,7 +1,7 @@
 ########################################################################
 # Project setup
 ########################################################################
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.1.0)
 project(PothosSoapy CXX)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
@@ -69,7 +69,6 @@ configure_file(
 ########################################################################
 ## Build and install module
 ########################################################################
-include_directories(${SoapySDR_INCLUDE_DIRS})
 include_directories(${JSON_HPP_INCLUDE_DIR})
 POTHOS_MODULE_UTIL(
     TARGET SoapySupport
@@ -82,7 +81,7 @@ POTHOS_MODULE_UTIL(
         SoapyInfo.cpp
         BlockThread.cpp
         EnumerateCache.cpp
-    LIBRARIES ${SoapySDR_LIBRARIES}
+    LIBRARIES SoapySDR
     DESTINATION soapy
     DOC_SOURCES
         DemoController.cpp
